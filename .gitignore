@@ -7,3 +7,5 @@ out/
 *.iml
 .vscode/
 .DS_Store
+output/
+legacy_src/
