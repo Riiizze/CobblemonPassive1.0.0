@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "cobblepassive",
+  "version": "1.0.1",
+  "name": "CobblePassive",
+  "description": "Cobblemon Addon: Specific party Pokémon grant passive buffs and abilities to the player.",
+  "authors": [
+    "maarl"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.cobblepassive.fabric.CobblePassiveFabric"
+    ],
+    "client": [
+      "com.cobblepassive.fabric.client.CobblePassiveFabricClient"
+    ]
+  },
+  "mixins": [
+    "cobblepassive.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "cobblemon": "*"
+  }
+}

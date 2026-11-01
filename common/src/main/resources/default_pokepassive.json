@@ -1,0 +1,362 @@
+{
+  "requireNotFainted": true,
+  "requireSentOut": true,
+  "allowShoulderState": true,
+  "uiSettings": {
+    "iconOffsetX": 53,
+    "iconOffsetY": 4,
+    "iconSize": 10,
+    "hudOffsetX": 14,
+    "hudOffsetY": 1,
+    "hudWidth": 151,
+    "hudMinHeight": 72,
+    "hudBgColor": "0xFF2D3C84",
+    "hudLayer": 1500,
+    "fontScale": 1.0
+  },
+  "passives": {
+    "charmander": {
+      "fireAspectSeconds": 3
+    },
+    "charmeleon": {
+      "fireAspectSeconds": 5
+    },
+    "charizard": {
+      "fireAspectSeconds": 7
+    },
+    "squirtle": {
+      "respirationLevel": 1
+    },
+    "wartortle": {
+      "respirationLevel": 2
+    },
+    "blastoise": {
+      "respirationLevel": 3,
+      "bonusAirSupply": 150
+    },
+    "drilbur": {
+      "effects": [
+        {
+          "effect": "minecraft:haste",
+          "amplifier": 0,
+          "maxY": 30
+        }
+      ]
+    },
+    "excadrill": {
+      "effects": [
+        {
+          "effect": "minecraft:haste",
+          "amplifier": 1,
+          "maxY": 30
+        }
+      ]
+    },
+    "ferroseed": {
+      "thornsDamage": 1.5
+    },
+    "ferrothorn": {
+      "thornsDamage": 3.0,
+      "inflictEffects": [
+        {
+          "effect": "minecraft:poison",
+          "durationSeconds": 4,
+          "amplifier": 0
+        }
+      ]
+    },
+    "meowth": {
+      "fortuneLevel": 1
+    },
+    "persian": {
+      "fortuneLevel": 3
+    },
+    "sableye": {
+      "oreRadarRadius": 5,
+      "radarIntervalSeconds": 7,
+      "pingDurationSeconds": 7,
+      "targetOres": [
+        "minecraft:diamond_ore",
+        "minecraft:deepslate_diamond_ore",
+        "minecraft:emerald_ore",
+        "minecraft:deepslate_emerald_ore",
+        "minecraft:gold_ore",
+        "minecraft:deepslate_gold_ore",
+        "minecraft:nether_gold_ore",
+        "minecraft:ancient_debris",
+        "minecraft:iron_ore",
+        "minecraft:deepslate_iron_ore",
+        "minecraft:copper_ore",
+        "minecraft:deepslate_copper_ore",
+        "minecraft:lapis_ore",
+        "minecraft:deepslate_lapis_ore",
+        "minecraft:redstone_ore",
+        "minecraft:deepslate_redstone_ore",
+        "minecraft:coal_ore",
+        "minecraft:deepslate_coal_ore"
+      ]
+    },
+    "hoothoot": {
+      "mobGlowingRadius": 10,
+      "mobGlowingNightOnly": true
+    },
+    "noctowl": {
+      "mobGlowingRadius": 10,
+      "mobGlowingNightOnly": true
+    },
+    "ekans": {
+      "sneakSpeedBonus": 0.3
+    },
+    "arbok": {
+      "sneakSpeedBonus": 0.6
+    },
+    "miltank": {
+      "fastDetox": true
+    },
+    "doduo": {
+      "effects": [
+        {
+          "effect": "minecraft:speed",
+          "amplifier": 0,
+          "biomeRequired": "savanna"
+        }
+      ]
+    },
+    "dodrio": {
+      "effects": [
+        {
+          "effect": "minecraft:speed",
+          "amplifier": 1,
+          "biomeRequired": "savanna"
+        }
+      ]
+    },
+    "froakie": {
+      "effects": [
+        {
+          "effect": "minecraft:jump_boost",
+          "amplifier": 0
+        }
+      ]
+    },
+    "frogadier": {
+      "effects": [
+        {
+          "effect": "minecraft:jump_boost",
+          "amplifier": 1
+        }
+      ]
+    },
+    "greninja": {
+      "effects": [
+        {
+          "effect": "minecraft:jump_boost",
+          "amplifier": 1
+        },
+        {
+          "effect": "minecraft:dolphins_grace",
+          "amplifier": 0
+        }
+      ]
+    },
+    "drifloon": {
+      "effects": [
+        {
+          "effect": "minecraft:slow_falling",
+          "amplifier": 0
+        }
+      ]
+    },
+    "drifblim": {
+      "effects": [
+        {
+          "effect": "minecraft:slow_falling",
+          "amplifier": 0
+        }
+      ]
+    },
+    "feebas": {
+      "effects": [
+        {
+          "effect": "minecraft:luck",
+          "amplifier": 0
+        }
+      ]
+    },
+    "milotic": {
+      "effects": [
+        {
+          "effect": "minecraft:luck",
+          "amplifier": 1
+        }
+      ]
+    },
+    "bidoof": {
+      "effects": [
+        {
+          "effect": "minecraft:haste",
+          "amplifier": 0,
+          "itemInHand": "axe"
+        }
+      ]
+    },
+    "bibarel": {
+      "effects": [
+        {
+          "effect": "minecraft:haste",
+          "amplifier": 1,
+          "itemInHand": "axe"
+        }
+      ]
+    },
+    "honedge": {
+      "smiteBonusDamage": 2.0
+    },
+    "marowak": {
+      "boneCrusherDamage": 4.0
+    },
+    "lucario": {
+      "effects": [
+        {
+          "effect": "minecraft:strength",
+          "amplifier": 0
+        }
+      ]
+    },
+    "tyrogue": {
+      "handBonusDamage": 2.0
+    },
+    "hitmonchan": {
+      "handBonusDamage": 4.0
+    },
+    "hitmonlee": {
+      "handBonusDamage": 4.0
+    },
+    "hitmontop": {
+      "handBonusDamage": 4.0
+    },
+    "galvantula": {
+      "webImmunity": true
+    },
+    "slowpoke": {
+      "hungerFeedIntervalSeconds": 25,
+      "hungerFeedAmount": 2
+    },
+    "timburr": {
+      "reachBonus": 0.5,
+      "breakSpeedBonus": 0.25
+    },
+    "gurdurr": {
+      "reachBonus": 1.0,
+      "breakSpeedBonus": 0.50
+    },
+    "conkeldurr": {
+      "reachBonus": 1.5,
+      "breakSpeedBonus": 0.75
+    },
+    "charcadet": {
+      "fireProtectionLevel": 3
+    },
+    "armarouge": {
+      "fireProtectionLevel": 4
+    },
+    "ceruledge": {
+      "fireProtectionLevel": 4
+    },
+    "slugma": {
+      "clearLavaVision": true,
+      "lavaFogClearPercent": 0.5
+    },
+    "magcargo": {
+      "clearLavaVision": true,
+      "lavaFogClearPercent": 1.0
+    },
+    "macargo": {
+      "clearLavaVision": true,
+      "lavaFogClearPercent": 1.0
+    },
+    "sharpedo": {
+      "waterNightVision": true
+    },
+    "sharkpedo": {
+      "waterNightVision": true
+    },
+    "celebi": {
+      "cropGrowthRadius": 8,
+      "cropGrowthChance": 0.50
+    },
+    "chelebi": {
+      "cropGrowthRadius": 8,
+      "cropGrowthChance": 0.50
+    },
+    "snivy": {
+      "effects": [
+        {
+          "effect": "minecraft:speed",
+          "amplifier": 0,
+          "biomeRequired": "forest"
+        }
+      ]
+    },
+    "servine": {
+      "effects": [
+        {
+          "effect": "minecraft:speed",
+          "amplifier": 0,
+          "biomeRequired": "forest"
+        }
+      ]
+    },
+    "serperior": {
+      "effects": [
+        {
+          "effect": "minecraft:speed",
+          "amplifier": 0,
+          "biomeRequired": "forest"
+        }
+      ]
+    },
+    "zubat": {
+      "lifeSteal": 1.0
+    },
+    "golbat": {
+      "lifeSteal": 1.0
+    },
+    "crobat": {
+      "lifeSteal": 2.0
+    },
+    "tangela": {
+      "vineClimbSpeedBonus": 0.25
+    },
+    "tangrowth": {
+      "vineClimbSpeedBonus": 0.50
+    },
+    "chiyu": {
+      "effects": [
+        {
+          "effect": "minecraft:fire_resistance",
+          "amplifier": 0
+        }
+      ]
+    },
+    "chi_yu": {
+      "effects": [
+        {
+          "effect": "minecraft:fire_resistance",
+          "amplifier": 0
+        }
+      ]
+    },
+    "chi-yu": {
+      "effects": [
+        {
+          "effect": "minecraft:fire_resistance",
+          "amplifier": 0
+        }
+      ]
+    },
+    "mew": {
+      "isMewDnaResonance": true
+    }
+  }
+}

@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.gradle.userdev' version '7.0.165'
+}
+
+dependencies {
+    implementation project(':common')
+    implementation "net.neoforged:neoforge:${property('neo_version')}"
+    implementation "com.cobblemon:mod:${property('cobblemon_version')}"
+}
+
+tasks.named('jar', Jar) {
+    archiveClassifier = 'neoforge'
+}
