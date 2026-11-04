@@ -1,27 +1,6 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  com.google.gson.Gson
- *  com.google.gson.GsonBuilder
- *  com.google.gson.JsonElement
- *  com.google.gson.JsonObject
- *  com.google.gson.JsonParser
- *  net.minecraft.core.Holder
- *  net.minecraft.core.registries.BuiltInRegistries
- *  net.minecraft.core.registries.Registries
- *  net.minecraft.resources.ResourceKey
- *  net.minecraft.resources.ResourceLocation
- *  net.minecraft.tags.BlockTags
- *  net.minecraft.tags.TagKey
- *  net.minecraft.world.effect.MobEffect
- *  net.minecraft.world.level.block.Block
- *  net.minecraft.world.level.block.Blocks
- *  net.minecraft.world.level.block.state.BlockState
- */
 package com.cobblepassive;
 
-import com.cobblepassive.CobblePassive;
+import com.cobblepassive.platform.Services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -32,13 +11,8 @@ import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +24,6 @@ import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -61,9 +34,11 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class PassiveConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_DIR = Paths.get("config", new String[0]);
+    private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDirectory();
     private static final Path CONFIG_FILE = CONFIG_DIR.resolve("cobblepassive.json");
-    private static final Map<String, PassiveEntry> passives = new HashMap<String, PassiveEntry>();
+
+    private static final Map<String, PassiveEntry> passives = new HashMap<>();
+
     public static boolean requireNotFainted = true;
     public static boolean requireSentOut = true;
     public static boolean allowShoulderState = true;
@@ -84,20 +59,26 @@ public class PassiveConfig {
     }
 
     public static PassiveEntry getPassive(String species) {
-        if (species == null) {
-            return null;
-        }
+        if (species == null) return null;
         String key = species.toLowerCase().trim();
         PassiveEntry entry = passives.get(key);
-        if (entry != null) {
-            return entry;
-        }
+        if (entry != null) return entry;
         String norm = key.replace("-", "").replace("_", "");
         for (Map.Entry<String, PassiveEntry> e : passives.entrySet()) {
-            if (!e.getKey().toLowerCase().replace("-", "").replace("_", "").equals(norm)) continue;
-            return e.getValue();
+            if (e.getKey().toLowerCase().replace("-", "").replace("_", "").equals(norm)) {
+                return e.getValue();
+            }
         }
         return null;
+    }
+
+    public static long getActiveSkillCooldownMs(String species, long defaultMs) {
+        if (species == null) return defaultMs;
+        PassiveEntry entry = getPassive(species.toLowerCase());
+        if (entry != null && entry.activeSkillCooldown > 0) {
+            return entry.activeSkillCooldown * 1000L;
+        }
+        return defaultMs;
     }
 
     public static Map<String, PassiveEntry> getAllPassives() {
@@ -111,74 +92,112 @@ public class PassiveConfig {
     public static void load() {
         passives.clear();
         try {
-            JsonObject root;
-            if (!Files.exists(CONFIG_FILE, new LinkOption[0])) {
-                PassiveConfig.copyDefaultFromResources();
+            if (!Files.exists(CONFIG_FILE)) {
+                copyDefaultFromResources();
             }
-            if (!Files.exists(CONFIG_FILE, new LinkOption[0])) {
+
+            if (!Files.exists(CONFIG_FILE)) {
                 return;
             }
-            try (BufferedReader reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8);){
-                root = JsonParser.parseReader((Reader)reader).getAsJsonObject();
+
+            JsonObject root;
+            try (Reader reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8)) {
+                root = JsonParser.parseReader(reader).getAsJsonObject();
             }
-            try (InputStream defIn = PassiveConfig.class.getResourceAsStream("/default_pokepassive.json");){
+
+            try (InputStream defIn = PassiveConfig.class.getResourceAsStream("/default_pokepassive.json")) {
                 if (defIn != null) {
                     String defJsonStr = new String(defIn.readAllBytes(), StandardCharsets.UTF_8);
-                    JsonObject defRoot = JsonParser.parseString((String)defJsonStr).getAsJsonObject();
+                    JsonObject defRoot = JsonParser.parseString(defJsonStr).getAsJsonObject();
                     JsonObject defPokemon = null;
                     if (defRoot.has("passives") && defRoot.get("passives").isJsonObject()) {
                         defPokemon = defRoot.getAsJsonObject("passives");
                     } else if (defRoot.has("pokemon") && defRoot.get("pokemon").isJsonObject()) {
                         defPokemon = defRoot.getAsJsonObject("pokemon");
                     }
+
                     if (defPokemon != null) {
-                        String[] syncKeys;
-                        String[] userCro;
-                        JsonObject userGol;
-                        JsonObject userZub;
-                        JsonObject userCelebi;
-                        JsonObject userMag;
-                        JsonObject userSlug;
-                        JsonElement el;
-                        String targetKey;
-                        String string = root.has("passives") ? "passives" : (targetKey = root.has("pokemon") ? "pokemon" : "passives");
+                        String targetKey = root.has("passives") ? "passives" : (root.has("pokemon") ? "pokemon" : "passives");
                         if (!root.has(targetKey) || !root.get(targetKey).isJsonObject()) {
-                            root.add(targetKey, (JsonElement)new JsonObject());
+                            root.add(targetKey, new JsonObject());
                         }
                         JsonObject userPokemon = root.getAsJsonObject(targetKey);
                         boolean updated = false;
-                        for (Map.Entry defEntry : defPokemon.entrySet()) {
-                            if (userPokemon.has((String)defEntry.getKey())) continue;
-                            userPokemon.add((String)defEntry.getKey(), (JsonElement)defEntry.getValue());
-                            updated = true;
+                        for (Map.Entry<String, JsonElement> defEntry : defPokemon.entrySet()) {
+                            if (!userPokemon.has(defEntry.getKey())) {
+                                userPokemon.add(defEntry.getKey(), defEntry.getValue());
+                                updated = true;
+                            }
                         }
-                        if (userPokemon.has("slugma") && defPokemon.has("slugma") && (el = userPokemon.get("slugma")).isJsonObject() && ((userSlug = el.getAsJsonObject()).has("lavaStriderSeconds") || !userSlug.has("lavaFogClearPercent"))) {
-                            userPokemon.add("slugma", defPokemon.get("slugma"));
-                            updated = true;
+                        if (userPokemon.has("slugma") && defPokemon.has("slugma")) {
+                            JsonElement el = userPokemon.get("slugma");
+                            if (el.isJsonObject()) {
+                                JsonObject userSlug = el.getAsJsonObject();
+                                if (userSlug.has("lavaStriderSeconds") || !userSlug.has("lavaFogClearPercent")) {
+                                    userPokemon.add("slugma", defPokemon.get("slugma"));
+                                    updated = true;
+                                }
+                            }
                         }
-                        if (userPokemon.has("magcargo") && defPokemon.has("magcargo") && (el = userPokemon.get("magcargo")).isJsonObject() && ((userMag = el.getAsJsonObject()).has("lavaStriderSeconds") || !userMag.has("lavaFogClearPercent"))) {
-                            userPokemon.add("magcargo", defPokemon.get("magcargo"));
-                            updated = true;
+                        if (userPokemon.has("magcargo") && defPokemon.has("magcargo")) {
+                            JsonElement el = userPokemon.get("magcargo");
+                            if (el.isJsonObject()) {
+                                JsonObject userMag = el.getAsJsonObject();
+                                if (userMag.has("lavaStriderSeconds") || !userMag.has("lavaFogClearPercent")) {
+                                    userPokemon.add("magcargo", defPokemon.get("magcargo"));
+                                    updated = true;
+                                }
+                            }
                         }
-                        if (userPokemon.has("celebi") && defPokemon.has("celebi") && (el = userPokemon.get("celebi")).isJsonObject() && (userCelebi = el.getAsJsonObject()).has("cropGrowthChance") && userCelebi.get("cropGrowthChance").getAsDouble() < 0.49) {
-                            userPokemon.add("celebi", defPokemon.get("celebi"));
-                            updated = true;
+                        if (userPokemon.has("celebi") && defPokemon.has("celebi")) {
+                            JsonElement el = userPokemon.get("celebi");
+                            if (el.isJsonObject()) {
+                                JsonObject userCelebi = el.getAsJsonObject();
+                                if (userCelebi.has("cropGrowthChance") && userCelebi.get("cropGrowthChance").getAsDouble() < 0.49) {
+                                    userPokemon.add("celebi", defPokemon.get("celebi"));
+                                    updated = true;
+                                }
+                            }
                         }
-                        if (userPokemon.has("chelebi") && defPokemon.has("chelebi") && (el = userPokemon.get("chelebi")).isJsonObject() && (userCelebi = el.getAsJsonObject()).has("cropGrowthChance") && userCelebi.get("cropGrowthChance").getAsDouble() < 0.49) {
-                            userPokemon.add("chelebi", defPokemon.get("chelebi"));
-                            updated = true;
+                        if (userPokemon.has("chelebi") && defPokemon.has("chelebi")) {
+                            JsonElement el = userPokemon.get("chelebi");
+                            if (el.isJsonObject()) {
+                                JsonObject userCelebi = el.getAsJsonObject();
+                                if (userCelebi.has("cropGrowthChance") && userCelebi.get("cropGrowthChance").getAsDouble() < 0.49) {
+                                    userPokemon.add("chelebi", defPokemon.get("chelebi"));
+                                    updated = true;
+                                }
+                            }
                         }
-                        if (userPokemon.has("zubat") && defPokemon.has("zubat") && (el = userPokemon.get("zubat")).isJsonObject() && ((userZub = el.getAsJsonObject()).has("effects") || !userZub.has("lifeSteal") || userZub.get("lifeSteal").getAsFloat() != 1.0f)) {
-                            userPokemon.add("zubat", defPokemon.get("zubat"));
-                            updated = true;
+                        if (userPokemon.has("zubat") && defPokemon.has("zubat")) {
+                            JsonElement el = userPokemon.get("zubat");
+                            if (el.isJsonObject()) {
+                                JsonObject userZub = el.getAsJsonObject();
+                                if (userZub.has("effects") || !userZub.has("lifeSteal") || userZub.get("lifeSteal").getAsFloat() != 1.0f) {
+                                    userPokemon.add("zubat", defPokemon.get("zubat"));
+                                    updated = true;
+                                }
+                            }
                         }
-                        if (userPokemon.has("golbat") && defPokemon.has("golbat") && (el = userPokemon.get("golbat")).isJsonObject() && ((userGol = el.getAsJsonObject()).has("effects") || !userGol.has("lifeSteal") || userGol.get("lifeSteal").getAsFloat() != 1.0f)) {
-                            userPokemon.add("golbat", defPokemon.get("golbat"));
-                            updated = true;
+                        if (userPokemon.has("golbat") && defPokemon.has("golbat")) {
+                            JsonElement el = userPokemon.get("golbat");
+                            if (el.isJsonObject()) {
+                                JsonObject userGol = el.getAsJsonObject();
+                                if (userGol.has("effects") || !userGol.has("lifeSteal") || userGol.get("lifeSteal").getAsFloat() != 1.0f) {
+                                    userPokemon.add("golbat", defPokemon.get("golbat"));
+                                    updated = true;
+                                }
+                            }
                         }
-                        if (userPokemon.has("crobat") && defPokemon.has("crobat") && (el = userPokemon.get("crobat")).isJsonObject() && ((userCro = el.getAsJsonObject()).has("effects") || !userCro.has("lifeSteal") || userCro.get("lifeSteal").getAsFloat() != 1.0f)) {
-                            userPokemon.add("crobat", defPokemon.get("crobat"));
-                            updated = true;
+                        if (userPokemon.has("crobat") && defPokemon.has("crobat")) {
+                            JsonElement el = userPokemon.get("crobat");
+                            if (el.isJsonObject()) {
+                                JsonObject userCro = el.getAsJsonObject();
+                                if (userCro.has("effects") || !userCro.has("lifeSteal") || userCro.get("lifeSteal").getAsFloat() != 1.0f) {
+                                    userPokemon.add("crobat", defPokemon.get("crobat"));
+                                    updated = true;
+                                }
+                            }
                         }
                         if (userPokemon.has("servine") && defPokemon.has("servine")) {
                             userPokemon.add("servine", defPokemon.get("servine"));
@@ -188,11 +207,50 @@ public class PassiveConfig {
                             userPokemon.add("serperior", defPokemon.get("serperior"));
                             updated = true;
                         }
-                        for (String key : syncKeys = new String[]{"feebas", "milotic", "ferroseed", "ferrothorn", "hoothoot", "noctowl", "timburr", "gurdurr", "conkeldurr", "tyrogue", "hitmonchan", "hitmonlee", "hitmontop", "charmander", "charmeleon", "charizard", "sharpedo"}) {
-                            if (!defPokemon.has(key)) continue;
-                            userPokemon.add(key, defPokemon.get(key));
-                            updated = true;
+
+                        String[] syncKeys = {
+                                "feebas", "milotic", "ferroseed", "ferrothorn",
+                                "hoothoot", "noctowl", "timburr", "gurdurr", "conkeldurr",
+                                "tyrogue", "hitmonchan", "hitmonlee", "hitmontop",
+                                "charmander", "charmeleon", "charizard", "sharpedo",
+                                "excadrill", "meganium", "rayquaza", "rillaboom"
+                        };
+                        for (String key : syncKeys) {
+                            if (defPokemon.has(key)) {
+                                userPokemon.add(key, defPokemon.get(key));
+                                updated = true;
+                            }
                         }
+
+                        if (userPokemon.has("excadrill") && userPokemon.get("excadrill").isJsonObject()) {
+                            JsonObject userEx = userPokemon.getAsJsonObject("excadrill");
+                            if (!userEx.has("activeSkillCooldown")) {
+                                userEx.addProperty("activeSkillCooldown", 30);
+                                updated = true;
+                            }
+                        }
+                        if (userPokemon.has("meganium") && userPokemon.get("meganium").isJsonObject()) {
+                            JsonObject userMeg = userPokemon.getAsJsonObject("meganium");
+                            if (!userMeg.has("activeSkillCooldown")) {
+                                userMeg.addProperty("activeSkillCooldown", 30);
+                                updated = true;
+                            }
+                        }
+                        if (userPokemon.has("rayquaza") && userPokemon.get("rayquaza").isJsonObject()) {
+                            JsonObject userRay = userPokemon.getAsJsonObject("rayquaza");
+                            if (!userRay.has("activeSkillCooldown")) {
+                                userRay.addProperty("activeSkillCooldown", 60);
+                                updated = true;
+                            }
+                        }
+                        if (userPokemon.has("rillaboom") && userPokemon.get("rillaboom").isJsonObject()) {
+                            JsonObject userRil = userPokemon.getAsJsonObject("rillaboom");
+                            if (!userRil.has("activeSkillCooldown")) {
+                                userRil.addProperty("activeSkillCooldown", 30);
+                                updated = true;
+                            }
+                        }
+
                         if (userPokemon.has("sharkpedo")) {
                             if (!userPokemon.has("sharpedo")) {
                                 userPokemon.add("sharpedo", userPokemon.get("sharkpedo"));
@@ -216,16 +274,17 @@ public class PassiveConfig {
                             userPokemon.remove("drakloak");
                             updated = true;
                         }
+
                         if (updated) {
-                            Files.writeString(CONFIG_FILE, (CharSequence)GSON.toJson((JsonElement)root), StandardCharsets.UTF_8, new OpenOption[0]);
+                            Files.writeString(CONFIG_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
                             CobblePassive.LOGGER.info("[CobblePassive] Merged new default Pokemon passives into cobblepassive.json");
                         }
                     }
                 }
+            } catch (Exception mergeEx) {
+                CobblePassive.LOGGER.warn("[CobblePassive] Could not merge defaults: {}", mergeEx.getMessage());
             }
-            catch (Exception mergeEx) {
-                CobblePassive.LOGGER.warn("[CobblePassive] Could not merge defaults: {}", (Object)mergeEx.getMessage());
-            }
+
             if (root.has("requireNotFainted")) {
                 requireNotFainted = root.get("requireNotFainted").getAsBoolean();
             }
@@ -233,77 +292,84 @@ public class PassiveConfig {
                 requireSentOut = root.get("requireSentOut").getAsBoolean();
             }
             if (root.has("allowShoulderState")) {
-                enableShoulderMount = allowShoulderState = root.get("allowShoulderState").getAsBoolean();
+                allowShoulderState = root.get("allowShoulderState").getAsBoolean();
+                enableShoulderMount = allowShoulderState;
             } else if (root.has("enableShoulderMount")) {
-                allowShoulderState = enableShoulderMount = root.get("enableShoulderMount").getAsBoolean();
+                enableShoulderMount = root.get("enableShoulderMount").getAsBoolean();
+                allowShoulderState = enableShoulderMount;
             }
             if (root.has("showStatusEffectIcons")) {
                 showStatusEffectIcons = root.get("showStatusEffectIcons").getAsBoolean();
             }
-            if (root.has("ui") && root.get("ui").isJsonObject()) {
-                JsonObject u = root.getAsJsonObject("ui");
-                if (u.has("iconOffsetX")) {
-                    PassiveConfig.ui.iconOffsetX = u.get("iconOffsetX").getAsInt();
-                }
-                if (u.has("iconOffsetY")) {
-                    PassiveConfig.ui.iconOffsetY = u.get("iconOffsetY").getAsInt();
-                }
-                if (u.has("iconSize")) {
-                    PassiveConfig.ui.iconSize = Math.max(4, u.get("iconSize").getAsInt());
-                }
-                if (u.has("hudOffsetX")) {
-                    PassiveConfig.ui.hudOffsetX = u.get("hudOffsetX").getAsInt();
-                }
-                if (u.has("hudOffsetY")) {
-                    PassiveConfig.ui.hudOffsetY = u.get("hudOffsetY").getAsInt();
-                }
-                if (u.has("hudWidth")) {
-                    PassiveConfig.ui.hudWidth = Math.max(80, u.get("hudWidth").getAsInt());
-                }
-                if (u.has("hudMinHeight")) {
-                    PassiveConfig.ui.hudMinHeight = Math.max(40, u.get("hudMinHeight").getAsInt());
-                }
-                if (u.has("hudBgColor")) {
-                    PassiveConfig.ui.hudBgColor = u.get("hudBgColor").getAsInt();
-                }
-                if (u.has("hudLayer")) {
-                    PassiveConfig.ui.hudLayer = u.get("hudLayer").getAsInt();
-                }
-                if (u.has("fontScale")) {
-                    PassiveConfig.ui.fontScale = Math.max(0.5f, Math.min(2.0f, u.get("fontScale").getAsFloat()));
-                }
+
+            JsonObject u = null;
+            if (root.has("uiSettings") && root.get("uiSettings").isJsonObject()) {
+                u = root.getAsJsonObject("uiSettings");
+            } else if (root.has("ui") && root.get("ui").isJsonObject()) {
+                u = root.getAsJsonObject("ui");
             }
+            if (u != null) {
+                if (u.has("iconOffsetX")) ui.iconOffsetX = u.get("iconOffsetX").getAsInt();
+                if (u.has("iconOffsetY")) ui.iconOffsetY = u.get("iconOffsetY").getAsInt();
+                if (u.has("iconSize")) ui.iconSize = Math.max(4, u.get("iconSize").getAsInt());
+                if (u.has("hudOffsetX")) ui.hudOffsetX = u.get("hudOffsetX").getAsInt();
+                if (u.has("hudOffsetY")) ui.hudOffsetY = u.get("hudOffsetY").getAsInt();
+                if (u.has("hudWidth")) ui.hudWidth = Math.max(80, u.get("hudWidth").getAsInt());
+                if (u.has("hudMinHeight")) ui.hudMinHeight = Math.max(40, u.get("hudMinHeight").getAsInt());
+                if (u.has("hudBgColor")) {
+                    try {
+                        JsonElement bgEl = u.get("hudBgColor");
+                        if (bgEl.isJsonPrimitive() && bgEl.getAsJsonPrimitive().isString()) {
+                            String hex = bgEl.getAsString().replace("0x", "").replace("#", "");
+                            ui.hudBgColor = (int) Long.parseLong(hex, 16);
+                        } else {
+                            ui.hudBgColor = bgEl.getAsInt();
+                        }
+                    } catch (Exception ignored) {}
+                }
+                if (u.has("hudLayer")) ui.hudLayer = u.get("hudLayer").getAsInt();
+                if (u.has("fontScale")) ui.fontScale = Math.max(0.5f, Math.min(2.0f, u.get("fontScale").getAsFloat()));
+            }
+
             JsonObject p = null;
             if (root.has("passives") && root.get("passives").isJsonObject()) {
                 p = root.getAsJsonObject("passives");
             } else if (root.has("pokemon") && root.get("pokemon").isJsonObject()) {
                 p = root.getAsJsonObject("pokemon");
             }
+
             if (p != null) {
-                for (Map.Entry entry : p.entrySet()) {
-                    if (!((JsonElement)entry.getValue()).isJsonObject()) continue;
-                    String species = ((String)entry.getKey()).toLowerCase().trim();
-                    if (species.equals("sharkpedo")) {
-                        species = "sharpedo";
-                    }
+                for (Map.Entry<String, JsonElement> entry : p.entrySet()) {
+                    if (!entry.getValue().isJsonObject()) continue;
+                    String species = entry.getKey().toLowerCase().trim();
+                    if (species.equals("sharkpedo")) species = "sharpedo";
                     if (species.equals("chi_yu") || species.equals("chiyu") || species.equals("dragonite") || species.equals("drakloak")) continue;
-                    JsonObject data = ((JsonElement)entry.getValue()).getAsJsonObject();
+                    JsonObject data = entry.getValue().getAsJsonObject();
                     PassiveEntry passiveEntry = new PassiveEntry();
+
                     if (data.has("effects") && data.get("effects").isJsonArray()) {
                         for (JsonElement effEl : data.getAsJsonArray("effects")) {
-                            Optional holder;
-                            String effectId;
-                            ResourceLocation rl;
-                            JsonObject effObj;
-                            if (!effEl.isJsonObject() || !(effObj = effEl.getAsJsonObject()).has("effect") || (rl = ResourceLocation.tryParse((String)(effectId = effObj.get("effect").getAsString()))) == null || (holder = BuiltInRegistries.MOB_EFFECT.getHolder(rl)).isEmpty()) continue;
+                            if (!effEl.isJsonObject()) continue;
+                            JsonObject effObj = effEl.getAsJsonObject();
+                            if (!effObj.has("effect")) continue;
+
+                            String effectId = effObj.get("effect").getAsString();
+                            ResourceLocation rl = ResourceLocation.tryParse(effectId);
+                            if (rl == null) continue;
+
+                            Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.getHolder(rl);
+                            if (holder.isEmpty()) continue;
+
                             int amplifier = effObj.has("amplifier") ? effObj.get("amplifier").getAsInt() : 0;
                             boolean nightOnly = effObj.has("nightOnly") && effObj.get("nightOnly").getAsBoolean();
                             String biomeRequired = effObj.has("biomeRequired") ? effObj.get("biomeRequired").getAsString().toLowerCase() : null;
                             String itemInHand = effObj.has("itemInHand") ? effObj.get("itemInHand").getAsString() : null;
-                            Integer maxY = effObj.has("maxY") ? Integer.valueOf(effObj.get("maxY").getAsInt()) : null;
-                            passiveEntry.effects.add(new PotionEffect((Holder<MobEffect>)((Holder)holder.get()), amplifier, nightOnly, biomeRequired, itemInHand, maxY));
+                            Integer maxY = effObj.has("maxY") ? effObj.get("maxY").getAsInt() : null;
+
+                            passiveEntry.effects.add(new PotionEffect(holder.get(), amplifier, nightOnly, biomeRequired, itemInHand, maxY));
                         }
                     }
+
                     if (data.has("lightLevel")) {
                         passiveEntry.lightLevel = Math.max(0, Math.min(15, data.get("lightLevel").getAsInt()));
                     }
@@ -326,7 +392,7 @@ public class PassiveConfig {
                         passiveEntry.pingDurationSeconds = Math.max(1, data.get("pingDurationSeconds").getAsInt());
                     }
                     if (data.has("targetOres") && data.get("targetOres").isJsonArray()) {
-                        passiveEntry.targetOres = new ArrayList<String>();
+                        passiveEntry.targetOres = new ArrayList<>();
                         for (JsonElement el : data.getAsJsonArray("targetOres")) {
                             passiveEntry.targetOres.add(el.getAsString());
                         }
@@ -442,13 +508,19 @@ public class PassiveConfig {
                     if (data.has("mobGlowingNightOnly")) {
                         passiveEntry.mobGlowingNightOnly = data.get("mobGlowingNightOnly").getAsBoolean();
                     }
+                    if (data.has("activeSkillCooldown")) {
+                        passiveEntry.activeSkillCooldown = Math.max(1, data.get("activeSkillCooldown").getAsInt());
+                    } else if (data.has("activeSkillCooldownSeconds")) {
+                        passiveEntry.activeSkillCooldown = Math.max(1, data.get("activeSkillCooldownSeconds").getAsInt());
+                    }
+
                     passives.put(species, passiveEntry);
                 }
             }
-            CobblePassive.LOGGER.info("[CobblePassive] Loaded {} Pokemon passives.", (Object)passives.size());
-        }
-        catch (Exception e) {
-            CobblePassive.LOGGER.error("[CobblePassive] Error loading config: {}", (Object)e.getMessage(), (Object)e);
+
+            CobblePassive.LOGGER.info("[CobblePassive] Loaded {} Pokemon passives.", passives.size());
+        } catch (Exception e) {
+            CobblePassive.LOGGER.error("[CobblePassive] Error loading config: {}", e.getMessage(), e);
         }
     }
 
@@ -467,52 +539,50 @@ public class PassiveConfig {
         }
         try {
             JsonObject root;
-            if (Files.exists(CONFIG_FILE, new LinkOption[0])) {
-                try (BufferedReader reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8);){
-                    root = JsonParser.parseReader((Reader)reader).getAsJsonObject();
+            if (Files.exists(CONFIG_FILE)) {
+                try (BufferedReader reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8)) {
+                    root = JsonParser.parseReader(reader).getAsJsonObject();
                 }
             } else {
                 root = new JsonObject();
             }
             JsonObject uiObj = new JsonObject();
-            uiObj.addProperty("iconOffsetX", (Number)PassiveConfig.ui.iconOffsetX);
-            uiObj.addProperty("iconOffsetY", (Number)PassiveConfig.ui.iconOffsetY);
-            uiObj.addProperty("iconSize", (Number)PassiveConfig.ui.iconSize);
-            uiObj.addProperty("hudOffsetX", (Number)PassiveConfig.ui.hudOffsetX);
-            uiObj.addProperty("hudOffsetY", (Number)PassiveConfig.ui.hudOffsetY);
-            uiObj.addProperty("hudWidth", (Number)PassiveConfig.ui.hudWidth);
-            uiObj.addProperty("hudMinHeight", (Number)PassiveConfig.ui.hudMinHeight);
-            uiObj.addProperty("hudBgColor", String.format("0x%08X", PassiveConfig.ui.hudBgColor));
-            uiObj.addProperty("hudLayer", (Number)PassiveConfig.ui.hudLayer);
-            uiObj.addProperty("fontScale", (Number)Float.valueOf(PassiveConfig.ui.fontScale));
-            root.add("uiSettings", (JsonElement)uiObj);
-            try (BufferedWriter writer = Files.newBufferedWriter(CONFIG_FILE, StandardCharsets.UTF_8, new OpenOption[0]);){
-                GSON.toJson((JsonElement)root, (Appendable)writer);
+            uiObj.addProperty("iconOffsetX", ui.iconOffsetX);
+            uiObj.addProperty("iconOffsetY", ui.iconOffsetY);
+            uiObj.addProperty("iconSize", ui.iconSize);
+            uiObj.addProperty("hudOffsetX", ui.hudOffsetX);
+            uiObj.addProperty("hudOffsetY", ui.hudOffsetY);
+            uiObj.addProperty("hudWidth", ui.hudWidth);
+            uiObj.addProperty("hudMinHeight", ui.hudMinHeight);
+            uiObj.addProperty("hudBgColor", String.format("0x%08X", ui.hudBgColor));
+            uiObj.addProperty("hudLayer", ui.hudLayer);
+            uiObj.addProperty("fontScale", ui.fontScale);
+            root.add("uiSettings", uiObj);
+            try (BufferedWriter writer = Files.newBufferedWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
+                GSON.toJson(root, writer);
             }
-            CobblePassive.LOGGER.info("[CobblePassive] UI settings saved to {} successfully!", (Object)CONFIG_FILE);
-        }
-        catch (Exception ex) {
-            CobblePassive.LOGGER.error("[CobblePassive] Failed to save UI config: {}", (Object)ex.getMessage());
+            CobblePassive.LOGGER.info("[CobblePassive] UI settings saved to {} successfully!", CONFIG_FILE);
+        } catch (Exception ex) {
+            CobblePassive.LOGGER.error("[CobblePassive] Failed to save UI config: {}", ex.getMessage());
         }
     }
 
     private static void copyDefaultFromResources() {
         try {
-            Files.createDirectories(CONFIG_DIR, new FileAttribute[0]);
-            try (InputStream in = PassiveConfig.class.getResourceAsStream("/default_pokepassive.json");){
+            Files.createDirectories(CONFIG_DIR);
+            try (InputStream in = PassiveConfig.class.getResourceAsStream("/default_pokepassive.json")) {
                 if (in != null) {
-                    Files.copy(in, CONFIG_FILE, new CopyOption[0]);
-                    CobblePassive.LOGGER.info("[CobblePassive] Copied default config to {}", (Object)CONFIG_FILE);
+                    Files.copy(in, CONFIG_FILE);
+                    CobblePassive.LOGGER.info("[CobblePassive] Copied default config to {}", CONFIG_FILE);
                 }
             }
-        }
-        catch (Exception e) {
-            CobblePassive.LOGGER.error("[CobblePassive] Could not copy default config: {}", (Object)e.getMessage());
+        } catch (Exception e) {
+            CobblePassive.LOGGER.error("[CobblePassive] Could not copy default config: {}", e.getMessage());
         }
     }
 
     public static class PassiveEntry {
-        public List<PotionEffect> effects = new ArrayList<PotionEffect>();
+        public List<PotionEffect> effects = new ArrayList<>();
         public int lightLevel = 0;
         public float thornsDamage = 0.0f;
         public int fireAspectSeconds = 0;
@@ -520,7 +590,7 @@ public class PassiveConfig {
         public int oreRadarRadius = 0;
         public int radarIntervalSeconds = 7;
         public int pingDurationSeconds = 7;
-        public List<String> targetOres = new ArrayList<String>();
+        public List<String> targetOres = new ArrayList<>();
         public float sneakSpeedBonus = 0.0f;
         public boolean fastDetox = false;
         public int respirationLevel = 0;
@@ -557,51 +627,54 @@ public class PassiveConfig {
         public int mobGlowingIntervalSeconds = 2;
         public int fastDetoxMaxDurationSeconds = 3;
         public float lavaVisionDistance = 64.0f;
-        private final Set<Block> cachedTargetBlocks = new HashSet<Block>();
-        private final Set<TagKey<Block>> cachedTargetTags = new HashSet<TagKey<Block>>();
+        public int activeSkillCooldown = 0;
+
+        private final Set<Block> cachedTargetBlocks = new HashSet<>();
+        private final Set<TagKey<Block>> cachedTargetTags = new HashSet<>();
         private boolean cacheInitialized = false;
 
         public void initTargetCache() {
             this.cachedTargetBlocks.clear();
             this.cachedTargetTags.clear();
             if (this.targetOres == null || this.targetOres.isEmpty()) {
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.DIAMOND_ORES);
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.EMERALD_ORES);
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.GOLD_ORES);
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.IRON_ORES);
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.COPPER_ORES);
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.LAPIS_ORES);
-                this.cachedTargetTags.add((TagKey<Block>)BlockTags.REDSTONE_ORES);
+                this.cachedTargetTags.add(BlockTags.DIAMOND_ORES);
+                this.cachedTargetTags.add(BlockTags.EMERALD_ORES);
+                this.cachedTargetTags.add(BlockTags.GOLD_ORES);
+                this.cachedTargetTags.add(BlockTags.IRON_ORES);
+                this.cachedTargetTags.add(BlockTags.COPPER_ORES);
+                this.cachedTargetTags.add(BlockTags.LAPIS_ORES);
+                this.cachedTargetTags.add(BlockTags.REDSTONE_ORES);
                 this.cachedTargetBlocks.add(Blocks.ANCIENT_DEBRIS);
             } else {
                 for (String ore : this.targetOres) {
                     if (ore.startsWith("#")) {
-                        ResourceLocation tagLoc = ResourceLocation.tryParse((String)ore.substring(1));
-                        if (tagLoc == null) continue;
-                        this.cachedTargetTags.add((TagKey<Block>)TagKey.create((ResourceKey)Registries.BLOCK, (ResourceLocation)tagLoc));
-                        continue;
+                        ResourceLocation tagLoc = ResourceLocation.tryParse(ore.substring(1));
+                        if (tagLoc != null) {
+                            this.cachedTargetTags.add(TagKey.create(Registries.BLOCK, tagLoc));
+                        }
+                    } else {
+                        ResourceLocation blockLoc = ResourceLocation.tryParse(ore.contains(":") ? ore : "minecraft:" + ore);
+                        if (blockLoc != null) {
+                            BuiltInRegistries.BLOCK.getOptional(blockLoc).ifPresent(this.cachedTargetBlocks::add);
+                        }
                     }
-                    ResourceLocation blockLoc = ResourceLocation.tryParse((String)(ore.contains(":") ? ore : "minecraft:" + ore));
-                    if (blockLoc == null) continue;
-                    BuiltInRegistries.BLOCK.getOptional(blockLoc).ifPresent(this.cachedTargetBlocks::add);
                 }
             }
             this.cacheInitialized = true;
         }
 
         public boolean matchesBlock(BlockState state) {
-            if (state == null || state.isAir()) {
-                return false;
-            }
+            if (state == null || state.isAir()) return false;
             if (!this.cacheInitialized) {
-                this.initTargetCache();
+                initTargetCache();
             }
             if (this.cachedTargetBlocks.contains(state.getBlock())) {
                 return true;
             }
             for (TagKey<Block> tag : this.cachedTargetTags) {
-                if (!state.is(tag)) continue;
-                return true;
+                if (state.is(tag)) {
+                    return true;
+                }
             }
             return false;
         }
@@ -648,7 +721,12 @@ public class PassiveConfig {
         }
     }
 
-    public record PotionEffect(Holder<MobEffect> effect, int amplifier, boolean nightOnly, String biomeRequired, String itemInHand, Integer maxY) {
-    }
+    public record PotionEffect(
+            Holder<MobEffect> effect,
+            int amplifier,
+            boolean nightOnly,
+            String biomeRequired,
+            String itemInHand,
+            Integer maxY
+    ) {}
 }
-

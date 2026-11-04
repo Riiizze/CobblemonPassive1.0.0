@@ -1,9 +1,12 @@
 package com.cobblepassive.neoforge.platform;
 
 import com.cobblepassive.platform.services.IPlatformHelper;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.nio.file.Path;
 
@@ -27,5 +30,19 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public boolean isPhysicalClient() {
         return FMLEnvironment.dist.isClient();
+    }
+
+    @Override
+    public void sendToServer(CustomPacketPayload payload) {
+        if (isPhysicalClient()) {
+            PacketDistributor.sendToServer(payload);
+        }
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+        if (player != null) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
     }
 }

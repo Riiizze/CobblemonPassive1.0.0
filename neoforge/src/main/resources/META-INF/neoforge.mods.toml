@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]]
 modId="cobblepassive"
-version="1.0.1"
+version="1.0.2"
 displayName="CobblePassive"
 description='''Cobblemon Addon: Specific party Pokémon grant passive buffs and abilities to the player.'''
 authors="maarl"

@@ -1,0 +1,46 @@
+{
+  "mappings": {
+    "com/cobblepassive/mixin/BackgroundRendererMixin": {
+      "setupFog": "Lnet/minecraft/class_758;method_3211(Lnet/minecraft/class_4184;Lnet/minecraft/class_758$class_4596;FZF)V"
+    },
+    "com/cobblepassive/mixin/EntitySlowMovementMixin": {
+      "isUnderWater": "Lnet/minecraft/class_1297;method_5869()Z",
+      "makeStuckInBlock": "Lnet/minecraft/class_1297;method_5844(Lnet/minecraft/class_2680;Lnet/minecraft/class_243;)V"
+    },
+    "com/cobblepassive/mixin/GuiMixin": {
+      "render": "Lnet/minecraft/class_329;method_1753(Lnet/minecraft/class_332;Lnet/minecraft/class_9779;)V"
+    },
+    "com/cobblepassive/mixin/LivingEntityMixin": {
+      "canStandOnFluid": "Lnet/minecraft/class_1309;method_26319(Lnet/minecraft/class_3610;)Z",
+      "getDamageAfterArmorAbsorb": "Lnet/minecraft/class_1309;method_6132(Lnet/minecraft/class_1282;F)F",
+      "handleRelativeFrictionAndCalculateMovement": "Lnet/minecraft/class_1309;method_26318(Lnet/minecraft/class_243;F)Lnet/minecraft/class_243;"
+    },
+    "com/cobblepassive/mixin/SummaryScreenMixin": {
+      "keyPressed": "Lcom/cobblemon/mod/common/client/gui/summary/Summary;method_25404(III)Z",
+      "render": "Lcom/cobblemon/mod/common/client/gui/summary/Summary;method_25394(Lnet/minecraft/class_332;IIF)V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/cobblepassive/mixin/BackgroundRendererMixin": {
+        "setupFog": "Lnet/minecraft/class_758;method_3211(Lnet/minecraft/class_4184;Lnet/minecraft/class_758$class_4596;FZF)V"
+      },
+      "com/cobblepassive/mixin/EntitySlowMovementMixin": {
+        "isUnderWater": "Lnet/minecraft/class_1297;method_5869()Z",
+        "makeStuckInBlock": "Lnet/minecraft/class_1297;method_5844(Lnet/minecraft/class_2680;Lnet/minecraft/class_243;)V"
+      },
+      "com/cobblepassive/mixin/GuiMixin": {
+        "render": "Lnet/minecraft/class_329;method_1753(Lnet/minecraft/class_332;Lnet/minecraft/class_9779;)V"
+      },
+      "com/cobblepassive/mixin/LivingEntityMixin": {
+        "canStandOnFluid": "Lnet/minecraft/class_1309;method_26319(Lnet/minecraft/class_3610;)Z",
+        "getDamageAfterArmorAbsorb": "Lnet/minecraft/class_1309;method_6132(Lnet/minecraft/class_1282;F)F",
+        "handleRelativeFrictionAndCalculateMovement": "Lnet/minecraft/class_1309;method_26318(Lnet/minecraft/class_243;F)Lnet/minecraft/class_243;"
+      },
+      "com/cobblepassive/mixin/SummaryScreenMixin": {
+        "keyPressed": "Lcom/cobblemon/mod/common/client/gui/summary/Summary;method_25404(III)Z",
+        "render": "Lcom/cobblemon/mod/common/client/gui/summary/Summary;method_25394(Lnet/minecraft/class_332;IIF)V"
+      }
+    }
+  }
+}

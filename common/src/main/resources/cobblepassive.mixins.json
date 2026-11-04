@@ -9,7 +9,8 @@
   ],
   "client": [
     "SummaryScreenMixin",
-    "BackgroundRendererMixin"
+    "BackgroundRendererMixin",
+    "GuiMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "cobblepassive",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "CobblePassive",
   "description": "Cobblemon Addon: Specific party Pokémon grant passive buffs and abilities to the player.",
   "authors": [

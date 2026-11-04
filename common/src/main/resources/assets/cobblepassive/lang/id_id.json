@@ -1,4 +1,21 @@
 {
-  "effect.cobblepassive.web_immunity": "Web Immune",
-  "effect.cobblepassive.webImmune": "Web Immune"
+  "effect.cobblepassive.web_immunity": "Kebal Jaring",
+  "effect.cobblepassive.webImmune": "Kebal Jaring",
+  "key.categories.cobblepassive": "CobblePassive",
+  "key.cobblepassive.active_skill": "Active Skill",
+  "key.cobblepassive.excadrill_skill": "Active Skill",
+  "message.cobblepassive.no_active_skill_pokemon": "Kamu tidak memiliki Pokémon berkemampuan aktif yang sedang dikeluarkan!",
+  "message.cobblepassive.excadrill.not_sent_out": "Excadrill harus ada di party dan sedang dikeluarkan di dunia!",
+  "message.cobblepassive.excadrill.cooldown": "Drill Excadrill sedang cooldown (%s detik tersisa)!",
+  "message.cobblepassive.excadrill.no_target": "Tidak ada blok target yang valid (jarak maks: 25 blok)!",
+  "message.cobblepassive.excadrill.activated": "Excadrill menggunakan Drill!",
+  "message.cobblepassive.meganium.not_sent_out": "Meganium harus ada di party dan sedang dikeluarkan di dunia!",
+  "message.cobblepassive.meganium.cooldown": "Floral Breath Meganium sedang cooldown (%s detik tersisa)!",
+  "message.cobblepassive.meganium.activated": "Meganium menggunakan Floral Breath!",
+  "message.cobblepassive.rayquaza.not_sent_out": "Rayquaza harus ada di party dan sedang dikeluarkan di dunia!",
+  "message.cobblepassive.rayquaza.cooldown": "Air Lock Rayquaza sedang cooldown (%s detik tersisa)!",
+  "message.cobblepassive.rayquaza.activated": "Rayquaza menggunakan Air Lock! Langit kembali cerah!",
+  "message.cobblepassive.rillaboom.not_sent_out": "Rillaboom harus ada di party dan sedang dikeluarkan di dunia!",
+  "message.cobblepassive.rillaboom.cooldown": "Grass Surge Rillaboom sedang cooldown (%s detik tersisa)!",
+  "message.cobblepassive.rillaboom.activated": "Rillaboom menggunakan Grass Surge! Tanah berubah menjadi Grassy Terrain!"
 }

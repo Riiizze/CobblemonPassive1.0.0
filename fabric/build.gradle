@@ -1,16 +1,37 @@
 plugins {
-    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
+}
+
+base {
+    archivesName = "CobblePassive"
+}
+
+loom {
+    mixin {
+        defaultRefmapName = "CobblePassive-refmap.json"
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir project(':common').file('src/main/java')
+        }
+        resources {
+            srcDir project(':common').file('src/main/resources')
+        }
+    }
 }
 
 dependencies {
-    implementation project(':common')
     minecraft "com.mojang:minecraft:${property('minecraft_version')}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${property('fabric_loader_version')}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${property('fabric_version')}"
-    modImplementation "com.cobblemon:mod:${property('cobblemon_version')}"
+    modImplementation "com.cobblemon:fabric:${property('cobblemon_version')}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:${property('fabric_kotlin_version')}"
 }
 
-tasks.named('jar', Jar) {
-    archiveClassifier = 'fabric'
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

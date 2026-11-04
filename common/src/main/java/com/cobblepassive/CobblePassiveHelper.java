@@ -1,52 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  com.cobblemon.mod.common.Cobblemon
- *  com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
- *  com.cobblemon.mod.common.client.CobblemonClient
- *  com.cobblemon.mod.common.client.storage.ClientParty
- *  com.cobblemon.mod.common.entity.pokemon.PokemonEntity
- *  com.cobblemon.mod.common.pokemon.Pokemon
- *  com.cobblemon.mod.common.pokemon.activestate.ActivePokemonState
- *  com.cobblemon.mod.common.pokemon.activestate.PokemonState
- *  com.cobblemon.mod.common.pokemon.activestate.SentOutState
- *  com.cobblemon.mod.common.pokemon.activestate.ShoulderedState
- *  net.minecraft.client.Minecraft
- *  net.minecraft.client.player.LocalPlayer
- *  net.minecraft.core.BlockPos
- *  net.minecraft.core.particles.ParticleOptions
- *  net.minecraft.core.particles.ParticleTypes
- *  net.minecraft.nbt.CompoundTag
- *  net.minecraft.resources.ResourceLocation
- *  net.minecraft.server.level.ServerLevel
- *  net.minecraft.server.level.ServerPlayer
- *  net.minecraft.tags.FluidTags
- *  net.minecraft.world.effect.MobEffectInstance
- *  net.minecraft.world.effect.MobEffects
- *  net.minecraft.world.entity.Entity
- *  net.minecraft.world.entity.ai.attributes.AttributeInstance
- *  net.minecraft.world.entity.ai.attributes.AttributeModifier
- *  net.minecraft.world.entity.ai.attributes.AttributeModifier$Operation
- *  net.minecraft.world.entity.ai.attributes.Attributes
- *  net.minecraft.world.entity.player.Player
- *  net.minecraft.world.entity.projectile.FishingHook
- *  net.minecraft.world.item.FishingRodItem
- *  net.minecraft.world.level.Level
- *  net.minecraft.world.level.block.Block
- *  net.minecraft.world.level.block.BonemealableBlock
- *  net.minecraft.world.level.block.CocoaBlock
- *  net.minecraft.world.level.block.CropBlock
- *  net.minecraft.world.level.block.NetherWartBlock
- *  net.minecraft.world.level.block.SaplingBlock
- *  net.minecraft.world.level.block.StemBlock
- *  net.minecraft.world.level.block.SweetBerryBushBlock
- *  net.minecraft.world.level.block.state.BlockState
- *  net.minecraft.world.level.material.FluidState
- *  net.minecraft.world.phys.Vec3
- *  net.minecraft.world.phys.shapes.CollisionContext
- *  net.minecraft.world.phys.shapes.Shapes
- */
 package com.cobblepassive;
 
 import com.cobblemon.mod.common.Cobblemon;
@@ -55,35 +6,35 @@ import com.cobblemon.mod.common.client.CobblemonClient;
 import com.cobblemon.mod.common.client.storage.ClientParty;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import com.cobblemon.mod.common.pokemon.activestate.ActivePokemonState;
 import com.cobblemon.mod.common.pokemon.activestate.PokemonState;
 import com.cobblemon.mod.common.pokemon.activestate.SentOutState;
 import com.cobblemon.mod.common.pokemon.activestate.ShoulderedState;
-import com.cobblepassive.PassiveConfig;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.FishingHook;
-import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -100,25 +51,33 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 
 public class CobblePassiveHelper {
-    private static final Map<UUID, Integer> PLAYER_FIRE_PROT_LEVEL = new HashMap<UUID, Integer>();
-    private static final Map<UUID, Integer> PLAYER_LAVA_MAX_TICKS = new HashMap<UUID, Integer>();
-    private static final Map<UUID, Integer> PLAYER_LAVA_REMAINING_TICKS = new HashMap<UUID, Integer>();
-    private static final Map<UUID, Float> PLAYER_LIFE_STEAL = new HashMap<UUID, Float>();
-    private static final Map<UUID, Double> PLAYER_VINE_CLIMB = new HashMap<UUID, Double>();
-    private static final Map<UUID, Float> PLAYER_BREAK_SPEED = new HashMap<UUID, Float>();
-    private static final Map<UUID, Float> PLAYER_THORNS_DAMAGE = new HashMap<UUID, Float>();
-    private static final Map<UUID, Boolean> PLAYER_FERROTHORN_POISON = new HashMap<UUID, Boolean>();
-    private static final Map<UUID, Integer> PLAYER_FIRE_ASPECT_SEC = new HashMap<UUID, Integer>();
-    private static final Map<UUID, Float> PLAYER_BARE_HAND_DMG = new HashMap<UUID, Float>();
-    private static final Map<UUID, Integer> PLAYER_FISHING_LUCK = new HashMap<UUID, Integer>();
-    private static final Map<UUID, Integer> PLAYER_FISHING_LURE = new HashMap<UUID, Integer>();
-    private static final ResourceLocation OXYGEN_BONUS_ID = ResourceLocation.fromNamespaceAndPath((String)"cobblepassive", (String)"oxygen_bonus");
-    private static final ResourceLocation BURNING_TIME_ID = ResourceLocation.fromNamespaceAndPath((String)"cobblepassive", (String)"burning_time");
-    private static final ResourceLocation SNEAK_SPEED_ID = ResourceLocation.fromNamespaceAndPath((String)"cobblepassive", (String)"sneak_speed_bonus");
-    private static final ResourceLocation BLOCK_REACH_ID = ResourceLocation.fromNamespaceAndPath((String)"cobblepassive", (String)"block_reach_bonus");
-    private static final ResourceLocation ENTITY_REACH_ID = ResourceLocation.fromNamespaceAndPath((String)"cobblepassive", (String)"entity_reach_bonus");
-    private static final ResourceLocation BREAK_SPEED_ID = ResourceLocation.fromNamespaceAndPath((String)"cobblepassive", (String)"break_speed_bonus");
-    private static Field FIELD_TIME_UNTIL_LURED;
+    private static final Map<UUID, Integer> PLAYER_FIRE_PROT_LEVEL = new HashMap<>();
+    private static final Map<UUID, Integer> PLAYER_LAVA_MAX_TICKS = new HashMap<>();
+    private static final Map<UUID, Integer> PLAYER_LAVA_REMAINING_TICKS = new HashMap<>();
+    private static final Map<UUID, Float> PLAYER_LIFE_STEAL = new HashMap<>();
+    private static final Map<UUID, Double> PLAYER_VINE_CLIMB = new HashMap<>();
+    private static final Map<UUID, Float> PLAYER_BREAK_SPEED = new HashMap<>();
+    private static final Map<UUID, Float> PLAYER_THORNS_DAMAGE = new HashMap<>();
+    private static final Map<UUID, Boolean> PLAYER_FERROTHORN_POISON = new HashMap<>();
+    private static final Map<UUID, Integer> PLAYER_FIRE_ASPECT_SEC = new HashMap<>();
+    private static final Map<UUID, Float> PLAYER_BARE_HAND_DMG = new HashMap<>();
+    private static final Map<UUID, Integer> PLAYER_FISHING_LUCK = new HashMap<>();
+    private static final Map<UUID, Integer> PLAYER_FISHING_LURE = new HashMap<>();
+
+    private static final ResourceLocation OXYGEN_BONUS_ID = ResourceLocation.fromNamespaceAndPath("cobblepassive", "oxygen_bonus");
+    private static final ResourceLocation BURNING_TIME_ID = ResourceLocation.fromNamespaceAndPath("cobblepassive", "burning_time");
+    private static final ResourceLocation SNEAK_SPEED_ID = ResourceLocation.fromNamespaceAndPath("cobblepassive", "sneak_speed_bonus");
+    private static final ResourceLocation BLOCK_REACH_ID = ResourceLocation.fromNamespaceAndPath("cobblepassive", "block_reach_bonus");
+    private static final ResourceLocation ENTITY_REACH_ID = ResourceLocation.fromNamespaceAndPath("cobblepassive", "entity_reach_bonus");
+    private static final ResourceLocation BREAK_SPEED_ID = ResourceLocation.fromNamespaceAndPath("cobblepassive", "break_speed_bonus");
+
+    private static java.lang.reflect.Field FIELD_TIME_UNTIL_LURED;
+    static {
+        try {
+            FIELD_TIME_UNTIL_LURED = net.minecraft.world.entity.projectile.FishingHook.class.getDeclaredField("timeUntilLured");
+            FIELD_TIME_UNTIL_LURED.setAccessible(true);
+        } catch (Throwable ignored) {}
+    }
 
     public static int getFireProtectionLevel(Player player) {
         return PLAYER_FIRE_PROT_LEVEL.getOrDefault(player.getUUID(), 0);
@@ -127,90 +86,107 @@ public class CobblePassiveHelper {
     public static boolean hasLavaStrider(Player player) {
         UUID uuid = player.getUUID();
         Integer max = PLAYER_LAVA_MAX_TICKS.get(uuid);
-        if (max == null || max <= 0) {
-            return false;
-        }
+        if (max == null || max <= 0) return false;
         int rem = PLAYER_LAVA_REMAINING_TICKS.getOrDefault(uuid, max);
         return rem > 0;
     }
 
     public static double getVineClimbBonus(Player player) {
         Double bonus = PLAYER_VINE_CLIMB.get(player.getUUID());
-        if (bonus != null && bonus > 0.0) {
-            return bonus;
-        }
+        if (bonus != null && bonus > 0.0) return bonus;
         if (player.level().isClientSide()) {
             try {
-                ClientParty party = CobblemonClient.INSTANCE.getStorage().getMyParty();
+                Iterable<Pokemon> party = getClientParty();
                 if (party != null) {
                     double maxBonus = 0.0;
                     for (Pokemon pokemon : party) {
-                        if (!CobblePassiveHelper.isPokemonActive(player, pokemon)) continue;
+                        if (!isPokemonActive(player, pokemon)) continue;
                         String species = pokemon.getSpecies().getName().toLowerCase();
                         PassiveConfig.PassiveEntry entry = PassiveConfig.getPassive(species);
                         if (entry != null && entry.vineClimbSpeedBonus > maxBonus) {
                             maxBonus = entry.vineClimbSpeedBonus;
                         }
-                        if (species.equals("tangrowth") && maxBonus < 0.5) {
-                            maxBonus = 0.5;
-                            continue;
-                        }
-                        if (!species.equals("tangela") || !(maxBonus < 0.25)) continue;
-                        maxBonus = 0.25;
+                        if (species.equals("tangrowth") && maxBonus < 0.50) maxBonus = 0.50;
+                        else if (species.equals("tangela") && maxBonus < 0.25) maxBonus = 0.25;
                     }
                     return maxBonus;
                 }
-            }
-            catch (Throwable throwable) {
-                // empty catch block
-            }
+            } catch (Throwable ignored) {}
         }
         return 0.0;
     }
 
     public static void applyLifeSteal(Player player) {
         Float amount = PLAYER_LIFE_STEAL.get(player.getUUID());
-        if (amount != null && amount.floatValue() > 0.0f && player.getHealth() < player.getMaxHealth()) {
-            player.heal(amount.floatValue());
+        if (amount != null && amount > 0.0f) {
+            if (player.getHealth() < player.getMaxHealth()) {
+                player.heal(amount);
+            }
+        }
+    }
+
+    public static void onPlayerDamaged(Player player, DamageSource source, float amount) {
+        if (player == null || source == null || player.level().isClientSide()) return;
+        if (!source.is(DamageTypes.THORNS)) {
+            Entity directAttacker = source.getEntity();
+            if (directAttacker instanceof LivingEntity livingAttacker && livingAttacker != player && livingAttacker.isAlive()) {
+                float thornsDmg = getPlayerThornsDamage(player);
+                if (thornsDmg > 0.0f) {
+                    livingAttacker.hurt(player.damageSources().thorns(player), thornsDmg);
+                    if (hasFerrothornPoison(player)) {
+                        livingAttacker.addEffect(new MobEffectInstance(MobEffects.POISON, 80, 0));
+                    }
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.THORNS_HIT, SoundSource.PLAYERS, 1.0f, 1.0f);
+                    if (player.level() instanceof ServerLevel sl) {
+                        sl.sendParticles(ParticleTypes.DAMAGE_INDICATOR, livingAttacker.getX(), livingAttacker.getY() + livingAttacker.getBbHeight() * 0.5, livingAttacker.getZ(), 5, 0.2, 0.2, 0.2, 0.1);
+                    }
+                }
+            }
         }
     }
 
     public static boolean isPlayerOnOrInLava(Player player) {
-        BlockPos pos;
         if (player.isInLava()) {
             return true;
         }
         Level world = player.level();
-        if (world.getFluidState(pos = player.blockPosition()).is(FluidTags.LAVA)) {
+        BlockPos pos = player.blockPosition();
+        if (world.getFluidState(pos).is(FluidTags.LAVA)) {
             return true;
         }
         FluidState below = world.getFluidState(pos.below());
-        return below.is(FluidTags.LAVA);
+        if (below.is(FluidTags.LAVA)) {
+            return true;
+        }
+        return false;
     }
 
     public static void tickLavaStrider(Player player) {
         UUID uuid = player.getUUID();
         Integer max = PLAYER_LAVA_MAX_TICKS.get(uuid);
-        if (max == null || max <= 0) {
-            return;
-        }
-        boolean inOrOnLava = CobblePassiveHelper.isPlayerOnOrInLava(player);
+        if (max == null || max <= 0) return;
+
+        boolean inOrOnLava = isPlayerOnOrInLava(player);
         if (!inOrOnLava) {
             PLAYER_LAVA_REMAINING_TICKS.put(uuid, max);
             return;
         }
+
         int rem = PLAYER_LAVA_REMAINING_TICKS.getOrDefault(uuid, max);
         if (rem > 0) {
-            PLAYER_LAVA_REMAINING_TICKS.put(uuid, --rem);
+            rem--;
+            PLAYER_LAVA_REMAINING_TICKS.put(uuid, rem);
+
             if (!player.isCrouching()) {
-                double hSpeed;
                 Vec3 vel = player.getDeltaMovement();
                 double vx = vel.x;
                 double vy = vel.y;
                 double vz = vel.z;
+
                 if (player.isInLava()) {
-                    CollisionContext ctx = CollisionContext.of((Entity)player);
-                    if (ctx.isAbove(Shapes.block(), player.blockPosition(), true) && !player.level().getFluidState(player.blockPosition().above()).is(FluidTags.LAVA)) {
+                    CollisionContext ctx = CollisionContext.of(player);
+                    if (ctx.isAbove(Shapes.block(), player.blockPosition(), true)
+                            && !player.level().getFluidState(player.blockPosition().above()).is(FluidTags.LAVA)) {
                         player.setOnGround(true);
                         if (vy < 0.0) {
                             vy = 0.0;
@@ -219,8 +195,10 @@ public class CobblePassiveHelper {
                         vy = vy * 0.5 + 0.05;
                     }
                 }
-                if ((hSpeed = Math.hypot(vx, vz)) > 0.002) {
-                    double targetPerTick = 0.1;
+
+                double hSpeed = Math.hypot(vx, vz);
+                if (hSpeed > 0.002) {
+                    double targetPerTick = 0.10;
                     double scale = targetPerTick / hSpeed;
                     vx *= scale;
                     vz *= scale;
@@ -231,20 +209,18 @@ public class CobblePassiveHelper {
     }
 
     public static void onPlayerTick(ServerPlayer player) {
-        String species;
-        Object pokeEntity;
-        String sp;
-        PlayerPartyStore party;
         if (player.isDeadOrDying()) {
-            CobblePassiveHelper.cleanupPlayer(player);
+            cleanupPlayer(player);
             return;
         }
+
+        PlayerPartyStore party;
         try {
             party = Cobblemon.INSTANCE.getStorage().getParty(player);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return;
         }
+
         boolean hasMew = false;
         int maxFireProt = 0;
         int maxLavaStriderSec = 0;
@@ -267,273 +243,185 @@ public class CobblePassiveHelper {
         float maxBareHandDmg = 0.0f;
         int maxFishingLuck = 0;
         int maxFishingLure = 0;
+
         Entity vehicle = player.getVehicle();
-        if (vehicle instanceof PokemonEntity && (sp = (pokeEntity = (PokemonEntity)vehicle).getPokemon().getSpecies().getName().toLowerCase()).contains("sharpedo")) {
-            hasSharpedo = true;
+        if (vehicle instanceof PokemonEntity pokeEntity) {
+            String sp = pokeEntity.getPokemon().getSpecies().getName().toLowerCase();
+            if (sp.contains("sharpedo")) {
+                hasSharpedo = true;
+            }
         }
+
         for (Pokemon pokemon : party) {
-            if (!CobblePassiveHelper.isPokemonActive((Player)player, pokemon)) continue;
-            species = pokemon.getSpecies().getName().toLowerCase();
+            if (!isPokemonActive(player, pokemon)) continue;
+            String species = pokemon.getSpecies().getName().toLowerCase();
             PassiveConfig.PassiveEntry entry = PassiveConfig.getPassive(species);
             if (entry != null) {
-                if (entry.isMewDnaResonance || species.equals("mew")) {
-                    hasMew = true;
-                }
-                if (entry.fireProtectionLevel > maxFireProt) {
-                    maxFireProt = entry.fireProtectionLevel;
-                }
-                if (entry.lavaStriderSeconds > maxLavaStriderSec) {
-                    maxLavaStriderSec = entry.lavaStriderSeconds;
-                }
-                if (entry.respirationLevel > maxRespiration) {
-                    maxRespiration = entry.respirationLevel;
-                }
-                if (entry.waterNightVision || species.contains("sharpedo")) {
-                    hasSharpedo = true;
-                }
+                if (entry.isMewDnaResonance || species.equals("mew")) hasMew = true;
+                if (entry.fireProtectionLevel > maxFireProt) maxFireProt = entry.fireProtectionLevel;
+                if (entry.lavaStriderSeconds > maxLavaStriderSec) maxLavaStriderSec = entry.lavaStriderSeconds;
+                if (entry.respirationLevel > maxRespiration) maxRespiration = entry.respirationLevel;
+                if (entry.waterNightVision || species.contains("sharpedo")) hasSharpedo = true;
                 if (entry.cropGrowthRadius > 0 || species.equals("celebi") || species.equals("chelebi")) {
                     hasCelebi = true;
-                    if (entry.cropGrowthRadius > 0) {
-                        maxCropRadius = entry.cropGrowthRadius;
-                    }
-                    if (entry.cropGrowthChance > 0.0) {
-                        maxCropChance = entry.cropGrowthChance;
-                    }
-                    if (entry.cropGrowthIntervalSeconds > 0.0) {
-                        minCropIntervalSec = entry.cropGrowthIntervalSeconds;
-                    }
-                    if (entry.cropGrowthMinCrops >= 0) {
-                        minCropsThreshold = entry.cropGrowthMinCrops;
-                    }
+                    if (entry.cropGrowthRadius > 0) maxCropRadius = entry.cropGrowthRadius;
+                    if (entry.cropGrowthChance > 0) maxCropChance = entry.cropGrowthChance;
+                    if (entry.cropGrowthIntervalSeconds > 0) minCropIntervalSec = entry.cropGrowthIntervalSeconds;
+                    if (entry.cropGrowthMinCrops >= 0) minCropsThreshold = entry.cropGrowthMinCrops;
                 }
-                if (entry.lifeSteal > maxLifeSteal) {
-                    maxLifeSteal = entry.lifeSteal;
-                }
-                if (entry.lifeStealMewBonus > 0.0f) {
-                    mewLifeStealBonus = entry.lifeStealMewBonus;
-                }
+                if (entry.lifeSteal > maxLifeSteal) maxLifeSteal = entry.lifeSteal;
+                if (entry.lifeStealMewBonus > 0.0f) mewLifeStealBonus = entry.lifeStealMewBonus;
                 if (species.equals("crobat")) {
-                    if (maxLifeSteal < 2.0f) {
-                        maxLifeSteal = 2.0f;
-                    }
-                } else if ((species.equals("golbat") || species.equals("zubat")) && maxLifeSteal < 1.0f) {
-                    maxLifeSteal = 1.0f;
+                    if (maxLifeSteal < 2.0f) maxLifeSteal = 2.0f;
+                } else if (species.equals("golbat") || species.equals("zubat")) {
+                    if (maxLifeSteal < 1.0f) maxLifeSteal = 1.0f;
                 }
-                if (entry.vineClimbSpeedBonus > maxVineClimb) {
-                    maxVineClimb = entry.vineClimbSpeedBonus;
-                }
-                if (species.equals("tangrowth") && maxVineClimb < 0.5) {
-                    maxVineClimb = 0.5;
-                } else if (species.equals("tangela") && maxVineClimb < 0.25) {
-                    maxVineClimb = 0.25;
-                }
-                if ((double)entry.sneakSpeedBonus > maxSneakSpeed) {
-                    maxSneakSpeed = entry.sneakSpeedBonus;
-                }
-                if (species.equals("ekans") && maxSneakSpeed < 0.3) {
-                    maxSneakSpeed = 0.3;
-                } else if (species.equals("arbok") && maxSneakSpeed < 0.6) {
-                    maxSneakSpeed = 0.6;
-                }
-                if (entry.reachBonus > maxReachBonus) {
-                    maxReachBonus = entry.reachBonus;
-                }
-                if (entry.breakSpeedBonus > maxBreakSpeedBonus) {
-                    maxBreakSpeedBonus = entry.breakSpeedBonus;
-                }
-                if (entry.thornsDamage > maxThornsDamage) {
-                    maxThornsDamage = entry.thornsDamage;
-                }
-                if (entry.inflictPoisonSeconds > 0 || species.equals("ferrothorn")) {
-                    hasFerrothornPoison = true;
-                }
-                if (entry.fireAspectSeconds > maxFireAspectSec) {
-                    maxFireAspectSec = entry.fireAspectSeconds;
-                }
-                if (entry.handBonusDamage > maxBareHandDmg) {
-                    maxBareHandDmg = entry.handBonusDamage;
-                }
-                if (entry.fishingLuckLevel > maxFishingLuck) {
-                    maxFishingLuck = entry.fishingLuckLevel;
-                }
-                if (entry.fishingLureLevel > maxFishingLure) {
-                    maxFishingLure = entry.fishingLureLevel;
-                }
+
+                if (entry.vineClimbSpeedBonus > maxVineClimb) maxVineClimb = entry.vineClimbSpeedBonus;
+                if (species.equals("tangrowth") && maxVineClimb < 0.50) maxVineClimb = 0.50;
+                else if (species.equals("tangela") && maxVineClimb < 0.25) maxVineClimb = 0.25;
+
+                if (entry.sneakSpeedBonus > maxSneakSpeed) maxSneakSpeed = entry.sneakSpeedBonus;
+                if (species.equals("ekans") && maxSneakSpeed < 0.3) maxSneakSpeed = 0.3;
+                else if (species.equals("arbok") && maxSneakSpeed < 0.6) maxSneakSpeed = 0.6;
+
+                if (entry.reachBonus > maxReachBonus) maxReachBonus = entry.reachBonus;
+                if (entry.breakSpeedBonus > maxBreakSpeedBonus) maxBreakSpeedBonus = entry.breakSpeedBonus;
+                if (entry.thornsDamage > maxThornsDamage) maxThornsDamage = entry.thornsDamage;
+                if (entry.inflictPoisonSeconds > 0 || species.equals("ferrothorn")) hasFerrothornPoison = true;
+                if (entry.fireAspectSeconds > maxFireAspectSec) maxFireAspectSec = entry.fireAspectSeconds;
+                if (entry.handBonusDamage > maxBareHandDmg) maxBareHandDmg = entry.handBonusDamage;
+                if (entry.fishingLuckLevel > maxFishingLuck) maxFishingLuck = entry.fishingLuckLevel;
+                if (entry.fishingLureLevel > maxFishingLure) maxFishingLure = entry.fishingLureLevel;
             } else {
-                if (species.equals("mew")) {
-                    hasMew = true;
-                }
-                if (species.contains("sharpedo")) {
-                    hasSharpedo = true;
-                }
-                if (species.equals("celebi") || species.equals("chelebi")) {
-                    hasCelebi = true;
-                }
+                if (species.equals("mew")) hasMew = true;
+                if (species.contains("sharpedo")) hasSharpedo = true;
+                if (species.equals("celebi") || species.equals("chelebi")) hasCelebi = true;
                 if (species.equals("crobat")) {
-                    if (maxLifeSteal < 2.0f) {
-                        maxLifeSteal = 2.0f;
-                    }
-                } else if ((species.equals("golbat") || species.equals("zubat")) && maxLifeSteal < 1.0f) {
-                    maxLifeSteal = 1.0f;
+                    if (maxLifeSteal < 2.0f) maxLifeSteal = 2.0f;
+                } else if (species.equals("golbat") || species.equals("zubat")) {
+                    if (maxLifeSteal < 1.0f) maxLifeSteal = 1.0f;
                 }
-                if (species.equals("tangrowth") && maxVineClimb < 0.5) {
-                    maxVineClimb = 0.5;
-                } else if (species.equals("tangela") && maxVineClimb < 0.25) {
-                    maxVineClimb = 0.25;
-                }
-                if (species.equals("ekans") && maxSneakSpeed < 0.3) {
-                    maxSneakSpeed = 0.3;
-                } else if (species.equals("arbok") && maxSneakSpeed < 0.6) {
-                    maxSneakSpeed = 0.6;
-                }
+
+                if (species.equals("tangrowth") && maxVineClimb < 0.50) maxVineClimb = 0.50;
+                else if (species.equals("tangela") && maxVineClimb < 0.25) maxVineClimb = 0.25;
+
+                if (species.equals("ekans") && maxSneakSpeed < 0.3) maxSneakSpeed = 0.3;
+                else if (species.equals("arbok") && maxSneakSpeed < 0.6) maxSneakSpeed = 0.6;
             }
+
             if (species.equals("timburr")) {
-                if (maxReachBonus < 0.5) {
-                    maxReachBonus = 0.5;
-                }
-                if (!(maxBreakSpeedBonus < 0.25)) continue;
-                maxBreakSpeedBonus = 0.25;
-                continue;
-            }
-            if (species.equals("gurdurr")) {
-                if (maxReachBonus < 1.0) {
-                    maxReachBonus = 1.0;
-                }
-                if (!(maxBreakSpeedBonus < 0.5)) continue;
-                maxBreakSpeedBonus = 0.5;
-                continue;
-            }
-            if (species.equals("conkeldurr")) {
-                if (maxReachBonus < 1.5) {
-                    maxReachBonus = 1.5;
-                }
-                if (!(maxBreakSpeedBonus < 0.75)) continue;
-                maxBreakSpeedBonus = 0.75;
-                continue;
-            }
-            if (species.equals("ferroseed")) {
-                if (!(maxThornsDamage < 1.5f)) continue;
-                maxThornsDamage = 1.5f;
-                continue;
-            }
-            if (species.equals("ferrothorn")) {
-                if (maxThornsDamage < 3.0f) {
-                    maxThornsDamage = 3.0f;
-                }
+                if (maxReachBonus < 0.5) maxReachBonus = 0.5;
+                if (maxBreakSpeedBonus < 0.25) maxBreakSpeedBonus = 0.25;
+            } else if (species.equals("gurdurr")) {
+                if (maxReachBonus < 1.0) maxReachBonus = 1.0;
+                if (maxBreakSpeedBonus < 0.50) maxBreakSpeedBonus = 0.50;
+            } else if (species.equals("conkeldurr")) {
+                if (maxReachBonus < 1.5) maxReachBonus = 1.5;
+                if (maxBreakSpeedBonus < 0.75) maxBreakSpeedBonus = 0.75;
+            } else if (species.equals("ferroseed")) {
+                if (maxThornsDamage < 1.5f) maxThornsDamage = 1.5f;
+            } else if (species.equals("ferrothorn")) {
+                if (maxThornsDamage < 3.0f) maxThornsDamage = 3.0f;
                 hasFerrothornPoison = true;
-                continue;
+            } else if (species.equals("charmander")) {
+                if (maxFireAspectSec < 3) maxFireAspectSec = 3;
+            } else if (species.equals("charmeleon")) {
+                if (maxFireAspectSec < 5) maxFireAspectSec = 5;
+            } else if (species.equals("charizard")) {
+                if (maxFireAspectSec < 7) maxFireAspectSec = 7;
+            } else if (species.equals("tyrogue")) {
+                if (maxBareHandDmg < 2.0f) maxBareHandDmg = 2.0f;
+            } else if (species.equals("hitmonchan") || species.equals("hitmonlee") || species.equals("hitmontop")) {
+                if (maxBareHandDmg < 4.0f) maxBareHandDmg = 4.0f;
+            } else if (species.equals("feebas") || species.equals("milotic")) {
+                if (maxFishingLuck < 3) maxFishingLuck = 3;
+                if (maxFishingLure < 3) maxFishingLure = 3;
             }
-            if (species.equals("charmander")) {
-                if (maxFireAspectSec >= 3) continue;
-                maxFireAspectSec = 3;
-                continue;
-            }
-            if (species.equals("charmeleon")) {
-                if (maxFireAspectSec >= 5) continue;
-                maxFireAspectSec = 5;
-                continue;
-            }
-            if (species.equals("charizard")) {
-                if (maxFireAspectSec >= 7) continue;
-                maxFireAspectSec = 7;
-                continue;
-            }
-            if (species.equals("tyrogue")) {
-                if (!(maxBareHandDmg < 2.0f)) continue;
-                maxBareHandDmg = 2.0f;
-                continue;
-            }
-            if (species.equals("hitmonchan") || species.equals("hitmonlee") || species.equals("hitmontop")) {
-                if (!(maxBareHandDmg < 4.0f)) continue;
-                maxBareHandDmg = 4.0f;
-                continue;
-            }
-            if (!species.equals("feebas") && !species.equals("milotic")) continue;
-            if (maxFishingLuck < 3) {
-                maxFishingLuck = 3;
-            }
-            if (maxFishingLure >= 3) continue;
-            maxFishingLure = 3;
         }
+
         if (hasMew) {
-            if (maxReachBonus > 0.0) {
-                maxReachBonus += 0.5;
-            }
-            if (maxBreakSpeedBonus > 0.0) {
-                maxBreakSpeedBonus += 0.25;
-            }
-            if (maxThornsDamage > 0.0f) {
-                maxThornsDamage += 1.5f;
-            }
-            if (maxFireAspectSec > 0) {
-                maxFireAspectSec += 2;
-            }
-            if (maxBareHandDmg > 0.0f) {
-                maxBareHandDmg += 2.0f;
-            }
-            if (maxFishingLuck > 0) {
-                ++maxFishingLuck;
-            }
-            if (maxFishingLure > 0) {
-                ++maxFishingLure;
-            }
+            if (maxReachBonus > 0.0) maxReachBonus += 0.5;
+            if (maxBreakSpeedBonus > 0.0) maxBreakSpeedBonus += 0.25;
+            if (maxThornsDamage > 0.0f) maxThornsDamage += 1.5f;
+            if (maxFireAspectSec > 0) maxFireAspectSec += 2;
+            if (maxBareHandDmg > 0.0f) maxBareHandDmg += 2.0f;
+            if (maxFishingLuck > 0) maxFishingLuck += 1;
+            if (maxFishingLure > 0) maxFishingLure += 1;
         }
+
         if (hasSharpedo) {
-            boolean inWater;
-            boolean bl = inWater = player.isInWater() || player.isEyeInFluid(FluidTags.WATER) || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER) || player.level().getFluidState(BlockPos.containing((double)player.getX(), (double)player.getEyeY(), (double)player.getZ())).is(FluidTags.WATER);
+            boolean inWater = player.isInWater()
+                    || player.isEyeInFluid(FluidTags.WATER)
+                    || player.level().getFluidState(player.blockPosition()).is(FluidTags.WATER)
+                    || player.level().getFluidState(BlockPos.containing(player.getX(), player.getEyeY(), player.getZ())).is(FluidTags.WATER);
             if (inWater) {
                 player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 220, 0, true, false, PassiveConfig.showStatusEffectIcons));
             }
         }
-        int cropTickInterval = Math.max(1, (int)Math.round(minCropIntervalSec * 20.0));
-        if (hasMew) {
-            cropTickInterval = Math.max(1, cropTickInterval / 2);
-        }
-        if (hasCelebi && player.tickCount % cropTickInterval == 0 && (species = player.level()) instanceof ServerLevel) {
-            BlockState state;
-            ServerLevel world = (ServerLevel)species;
-            BlockPos playerPos = player.blockPosition();
-            int radius = maxCropRadius > 0 ? maxCropRadius : 8;
-            ArrayList<BlockPos> detectedCrops = new ArrayList<BlockPos>();
-            BlockPos minPos = playerPos.offset(-radius, -2, -radius);
-            BlockPos maxPos = playerPos.offset(radius, 2, radius);
-            for (BlockPos targetPos : BlockPos.betweenClosed((BlockPos)minPos, (BlockPos)maxPos)) {
-                state = world.getBlockState(targetPos);
-                Block block = state.getBlock();
-                boolean isCropOrSapling = block instanceof BonemealableBlock || block instanceof CropBlock || block instanceof SaplingBlock || block instanceof StemBlock || block instanceof SweetBerryBushBlock || block instanceof CocoaBlock || block instanceof NetherWartBlock;
-                if (!isCropOrSapling) continue;
-                detectedCrops.add(targetPos.immutable());
-            }
-            if (detectedCrops.size() > minCropsThreshold) {
-                for (BlockPos cropPos : detectedCrops) {
-                    state = world.getBlockState(cropPos);
-                    if (maxCropChance >= 1.0 || world.random.nextDouble() < maxCropChance) {
-                        state.randomTick(world, cropPos, world.getRandom());
+
+        int cropTickInterval = Math.max(1, (int) Math.round(minCropIntervalSec * 20.0));
+        if (hasMew) cropTickInterval = Math.max(1, cropTickInterval / 2);
+
+        if (hasCelebi && player.tickCount % cropTickInterval == 0) {
+            if (player.level() instanceof ServerLevel world) {
+                BlockPos playerPos = player.blockPosition();
+                int radius = maxCropRadius > 0 ? maxCropRadius : 8;
+                List<BlockPos> detectedCrops = new ArrayList<>();
+                BlockPos minPos = playerPos.offset(-radius, -2, -radius);
+                BlockPos maxPos = playerPos.offset(radius, 2, radius);
+
+                for (BlockPos targetPos : BlockPos.betweenClosed(minPos, maxPos)) {
+                    BlockState state = world.getBlockState(targetPos);
+                    Block block = state.getBlock();
+                    boolean isCropOrSapling = block instanceof BonemealableBlock
+                            || block instanceof CropBlock
+                            || block instanceof SaplingBlock
+                            || block instanceof StemBlock
+                            || block instanceof SweetBerryBushBlock
+                            || block instanceof CocoaBlock
+                            || block instanceof NetherWartBlock;
+                    if (isCropOrSapling) {
+                        detectedCrops.add(targetPos.immutable());
                     }
-                    if (!(world.random.nextFloat() < 0.25f)) continue;
-                    world.sendParticles((ParticleOptions)ParticleTypes.HAPPY_VILLAGER, (double)cropPos.getX() + 0.5, (double)cropPos.getY() + 0.5, (double)cropPos.getZ() + 0.5, 1, 0.2, 0.2, 0.2, 0.05);
+                }
+
+                if (detectedCrops.size() > minCropsThreshold) {
+                    for (BlockPos cropPos : detectedCrops) {
+                        BlockState state = world.getBlockState(cropPos);
+                        if (maxCropChance >= 1.0 || world.random.nextDouble() < maxCropChance) {
+                            state.randomTick(world, cropPos, world.getRandom());
+                        }
+                        if (world.random.nextFloat() < 0.25f) {
+                            world.sendParticles(ParticleTypes.HAPPY_VILLAGER, cropPos.getX() + 0.5, cropPos.getY() + 0.5, cropPos.getZ() + 0.5, 1, 0.2, 0.2, 0.2, 0.05);
+                        }
+                    }
                 }
             }
         }
+
         if (maxLifeSteal > 0.0f) {
             float effLifeSteal = maxLifeSteal + (hasMew ? mewLifeStealBonus : 0.0f);
-            PLAYER_LIFE_STEAL.put(player.getUUID(), Float.valueOf(effLifeSteal));
+            PLAYER_LIFE_STEAL.put(player.getUUID(), effLifeSteal);
         } else {
             PLAYER_LIFE_STEAL.remove(player.getUUID());
         }
+
         if (maxVineClimb > 0.0) {
             PLAYER_VINE_CLIMB.put(player.getUUID(), maxVineClimb);
         } else {
             PLAYER_VINE_CLIMB.remove(player.getUUID());
         }
+
         if (maxFireProt > 0) {
             int effLevel = maxFireProt + (hasMew ? 1 : 0);
             PLAYER_FIRE_PROT_LEVEL.put(player.getUUID(), effLevel);
-            CobblePassiveHelper.updatePlayerBurningTime(player, effLevel);
+            updatePlayerBurningTime(player, effLevel);
         } else {
             PLAYER_FIRE_PROT_LEVEL.remove(player.getUUID());
-            CobblePassiveHelper.updatePlayerBurningTime(player, 0);
+            updatePlayerBurningTime(player, 0);
         }
+
         if (maxLavaStriderSec > 0) {
             int maxTicks = (maxLavaStriderSec + (hasMew ? 1 : 0)) * 20;
             PLAYER_LAVA_MAX_TICKS.put(player.getUUID(), maxTicks);
@@ -542,26 +430,30 @@ public class CobblePassiveHelper {
             PLAYER_LAVA_MAX_TICKS.remove(player.getUUID());
             PLAYER_LAVA_REMAINING_TICKS.remove(player.getUUID());
         }
+
         if (maxRespiration > 0) {
-            CobblePassiveHelper.updatePlayerOxygenBonus(player, maxRespiration + (hasMew ? 1 : 0));
+            updatePlayerOxygenBonus(player, maxRespiration + (hasMew ? 1 : 0));
         } else {
-            CobblePassiveHelper.updatePlayerOxygenBonus(player, 0);
+            updatePlayerOxygenBonus(player, 0);
         }
+
         if (maxSneakSpeed > 0.0) {
             double effSneak = maxSneakSpeed + (hasMew ? 0.2 : 0.0);
-            CobblePassiveHelper.updatePlayerSneakSpeed(player, effSneak);
+            updatePlayerSneakSpeed(player, effSneak);
         } else {
-            CobblePassiveHelper.updatePlayerSneakSpeed(player, 0.0);
+            updatePlayerSneakSpeed(player, 0.0);
         }
-        CobblePassiveHelper.updatePlayerReach(player, maxReachBonus);
-        CobblePassiveHelper.updatePlayerBreakSpeed(player, maxBreakSpeedBonus);
+
+        updatePlayerReach(player, maxReachBonus);
+        updatePlayerBreakSpeed(player, maxBreakSpeedBonus);
         if (maxBreakSpeedBonus > 0.0) {
-            PLAYER_BREAK_SPEED.put(player.getUUID(), Float.valueOf((float)maxBreakSpeedBonus));
+            PLAYER_BREAK_SPEED.put(player.getUUID(), (float) maxBreakSpeedBonus);
         } else {
             PLAYER_BREAK_SPEED.remove(player.getUUID());
         }
+
         if (maxThornsDamage > 0.0f) {
-            PLAYER_THORNS_DAMAGE.put(player.getUUID(), Float.valueOf(maxThornsDamage));
+            PLAYER_THORNS_DAMAGE.put(player.getUUID(), maxThornsDamage);
         } else {
             PLAYER_THORNS_DAMAGE.remove(player.getUUID());
         }
@@ -570,19 +462,23 @@ public class CobblePassiveHelper {
         } else {
             PLAYER_FERROTHORN_POISON.remove(player.getUUID());
         }
+
         if (maxFireAspectSec > 0) {
             PLAYER_FIRE_ASPECT_SEC.put(player.getUUID(), maxFireAspectSec);
         } else {
             PLAYER_FIRE_ASPECT_SEC.remove(player.getUUID());
         }
+
         if (maxBareHandDmg > 0.0f) {
-            PLAYER_BARE_HAND_DMG.put(player.getUUID(), Float.valueOf(maxBareHandDmg));
+            PLAYER_BARE_HAND_DMG.put(player.getUUID(), maxBareHandDmg);
         } else {
             PLAYER_BARE_HAND_DMG.remove(player.getUUID());
         }
+
         if (maxFishingLuck > 0 || maxFishingLure > 0) {
-            boolean holdingRod;
-            boolean bl = holdingRod = player.getMainHandItem().getItem() instanceof FishingRodItem || player.getOffhandItem().getItem() instanceof FishingRodItem || player.fishing != null;
+            boolean holdingRod = player.getMainHandItem().getItem() instanceof net.minecraft.world.item.FishingRodItem
+                    || player.getOffhandItem().getItem() instanceof net.minecraft.world.item.FishingRodItem
+                    || player.fishing != null;
             if (holdingRod) {
                 int amp = Math.max(0, maxFishingLuck - 1);
                 player.addEffect(new MobEffectInstance(MobEffects.LUCK, 220, amp, true, false, PassiveConfig.showStatusEffectIcons));
@@ -594,10 +490,7 @@ public class CobblePassiveHelper {
                         int reduction = Math.min(maxFishingLure, 3);
                         FIELD_TIME_UNTIL_LURED.setInt(player.fishing, Math.max(20, current - reduction));
                     }
-                }
-                catch (Throwable throwable) {
-                    // empty catch block
-                }
+                } catch (Throwable ignored) {}
             }
             PLAYER_FISHING_LUCK.put(player.getUUID(), maxFishingLuck);
             PLAYER_FISHING_LURE.put(player.getUUID(), maxFishingLure);
@@ -621,11 +514,11 @@ public class CobblePassiveHelper {
         PLAYER_BARE_HAND_DMG.remove(uuid);
         PLAYER_FISHING_LUCK.remove(uuid);
         PLAYER_FISHING_LURE.remove(uuid);
-        CobblePassiveHelper.updatePlayerBurningTime(player, 0);
-        CobblePassiveHelper.updatePlayerOxygenBonus(player, 0);
-        CobblePassiveHelper.updatePlayerSneakSpeed(player, 0.0);
-        CobblePassiveHelper.updatePlayerReach(player, 0.0);
-        CobblePassiveHelper.updatePlayerBreakSpeed(player, 0.0);
+        updatePlayerBurningTime(player, 0);
+        updatePlayerOxygenBonus(player, 0);
+        updatePlayerSneakSpeed(player, 0.0);
+        updatePlayerReach(player, 0.0);
+        updatePlayerBreakSpeed(player, 0.0);
     }
 
     private static void updatePlayerSneakSpeed(ServerPlayer player, double bonus) {
@@ -649,7 +542,7 @@ public class CobblePassiveHelper {
         if (inst != null) {
             inst.removeModifier(BURNING_TIME_ID);
             if (level > 0) {
-                double reduction = Math.max(-0.85, -0.15 * (double)level);
+                double reduction = Math.max(-0.85, -0.15 * (double) level);
                 inst.addPermanentModifier(new AttributeModifier(BURNING_TIME_ID, reduction, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
             }
         }
@@ -660,13 +553,12 @@ public class CobblePassiveHelper {
         if (inst != null) {
             inst.removeModifier(OXYGEN_BONUS_ID);
             if (level > 0) {
-                inst.addPermanentModifier(new AttributeModifier(OXYGEN_BONUS_ID, (double)level, AttributeModifier.Operation.ADD_VALUE));
+                inst.addPermanentModifier(new AttributeModifier(OXYGEN_BONUS_ID, (double) level, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }
 
     private static void updatePlayerReach(ServerPlayer player, double bonus) {
-        AttributeInstance entityReach;
         AttributeInstance blockReach = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
         if (blockReach != null) {
             blockReach.removeModifier(BLOCK_REACH_ID);
@@ -674,7 +566,8 @@ public class CobblePassiveHelper {
                 blockReach.addPermanentModifier(new AttributeModifier(BLOCK_REACH_ID, bonus, AttributeModifier.Operation.ADD_VALUE));
             }
         }
-        if ((entityReach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE)) != null) {
+        AttributeInstance entityReach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
+        if (entityReach != null) {
             entityReach.removeModifier(ENTITY_REACH_ID);
             if (bonus > 0.0) {
                 entityReach.addPermanentModifier(new AttributeModifier(ENTITY_REACH_ID, bonus, AttributeModifier.Operation.ADD_VALUE));
@@ -693,119 +586,77 @@ public class CobblePassiveHelper {
     }
 
     public static float getPlayerBreakSpeedBonus(Player player) {
-        if (player == null) {
-            return 0.0f;
-        }
+        if (player == null) return 0.0f;
         Float b = PLAYER_BREAK_SPEED.get(player.getUUID());
-        if (b != null && b.floatValue() > 0.0f) {
-            return b.floatValue();
-        }
+        if (b != null && b > 0.0f) return b;
         if (player.level().isClientSide()) {
             try {
-                ClientParty party = CobblemonClient.INSTANCE.getStorage().getMyParty();
+                Iterable<Pokemon> party = getClientParty();
                 if (party != null) {
                     float max = 0.0f;
                     for (Pokemon p : party) {
-                        if (!CobblePassiveHelper.isPokemonActive(player, p)) continue;
+                        if (!isPokemonActive(player, p)) continue;
                         String sp = p.getSpecies().getName().toLowerCase();
-                        if (sp.equals("conkeldurr")) {
-                            max = Math.max(max, 0.75f);
-                            continue;
-                        }
-                        if (sp.equals("gurdurr")) {
-                            max = Math.max(max, 0.5f);
-                            continue;
-                        }
-                        if (!sp.equals("timburr")) continue;
-                        max = Math.max(max, 0.25f);
+                        if (sp.equals("conkeldurr")) max = Math.max(max, 0.75f);
+                        else if (sp.equals("gurdurr")) max = Math.max(max, 0.50f);
+                        else if (sp.equals("timburr")) max = Math.max(max, 0.25f);
                     }
                     return max;
                 }
-            }
-            catch (Throwable throwable) {
-                // empty catch block
-            }
+            } catch (Throwable ignored) {}
         }
         return 0.0f;
     }
 
     public static float getPlayerThornsDamage(Player player) {
-        if (player == null) {
-            return 0.0f;
-        }
-        return PLAYER_THORNS_DAMAGE.getOrDefault(player.getUUID(), Float.valueOf(0.0f)).floatValue();
+        if (player == null) return 0.0f;
+        return PLAYER_THORNS_DAMAGE.getOrDefault(player.getUUID(), 0.0f);
     }
 
     public static boolean hasFerrothornPoison(Player player) {
-        if (player == null) {
-            return false;
-        }
+        if (player == null) return false;
         return PLAYER_FERROTHORN_POISON.getOrDefault(player.getUUID(), false);
     }
 
     public static int getPlayerFireAspectSeconds(Player player) {
-        if (player == null) {
-            return 0;
-        }
+        if (player == null) return 0;
         return PLAYER_FIRE_ASPECT_SEC.getOrDefault(player.getUUID(), 0);
     }
 
     public static float getPlayerBareHandBonusDamage(Player player) {
-        if (player == null) {
-            return 0.0f;
-        }
-        return PLAYER_BARE_HAND_DMG.getOrDefault(player.getUUID(), Float.valueOf(0.0f)).floatValue();
+        if (player == null) return 0.0f;
+        return PLAYER_BARE_HAND_DMG.getOrDefault(player.getUUID(), 0.0f);
     }
 
     public static boolean hasFishingBuff(Player player) {
-        if (player == null) {
-            return false;
-        }
+        if (player == null) return false;
         return PLAYER_FISHING_LUCK.containsKey(player.getUUID()) || PLAYER_FISHING_LURE.containsKey(player.getUUID());
     }
 
     public static double getLavaVisionAmount() {
         try {
             Minecraft client = Minecraft.getInstance();
-            if (client == null || client.player == null) {
-                return 0.0;
-            }
+            if (client == null || client.player == null) return 0.0;
             LocalPlayer player = client.player;
-            ClientParty party = null;
-            try {
-                party = CobblemonClient.INSTANCE.getStorage().getMyParty();
-            }
-            catch (Throwable throwable) {
-                // empty catch block
-            }
-            if (!(party != null && party.iterator().hasNext() || client.getSingleplayerServer() == null)) {
-                try {
-                    ServerPlayer sp = client.getSingleplayerServer().getPlayerList().getPlayer(player.getUUID());
-                    if (sp != null) {
-                        party = Cobblemon.INSTANCE.getStorage().getParty(sp);
-                    }
-                }
-                catch (Throwable sp) {
-                    // empty catch block
-                }
-            }
-            if (party == null) {
-                return 0.0;
-            }
+
+            Iterable<Pokemon> party = getClientParty();
+            if (party == null) return 0.0;
+
             boolean hasMew = false;
             for (Pokemon p : party) {
-                if (!CobblePassiveHelper.isPokemonActive((Player)player, p)) continue;
-                try {
-                    if (p.getSpecies() == null || !p.getSpecies().getName().equalsIgnoreCase("mew")) continue;
-                    hasMew = true;
-                    break;
-                }
-                catch (Throwable throwable) {
+                if (isPokemonActive(player, p)) {
+                    try {
+                        if (p.getSpecies() != null && p.getSpecies().getName().equalsIgnoreCase("mew")) {
+                            hasMew = true;
+                            break;
+                        }
+                    } catch (Throwable ignored) {}
                 }
             }
+
             double maxClear = 0.0;
             for (Pokemon pokemon : party) {
-                if (!CobblePassiveHelper.isPokemonActive((Player)player, pokemon)) continue;
+                if (!isPokemonActive(player, pokemon)) continue;
                 try {
                     if (pokemon.getSpecies() == null || pokemon.getSpecies().getName() == null) continue;
                     String species = pokemon.getSpecies().getName().toLowerCase();
@@ -816,102 +667,88 @@ public class CobblePassiveHelper {
                                 maxClear = entry.lavaFogClearPercent;
                             }
                         } else if (entry.clearLavaVision) {
-                            double def;
-                            double d = def = species.equals("slugma") ? 0.5 : 1.0;
-                            if (def > maxClear) {
-                                maxClear = def;
-                            }
+                            double def = (species.equals("slugma")) ? 0.5 : 1.0;
+                            if (def > maxClear) maxClear = def;
                         }
                     }
                     if (species.equals("slugma")) {
-                        if (!(maxClear < 0.5)) continue;
-                        maxClear = 0.5;
-                        continue;
+                        if (maxClear < 0.5) maxClear = 0.5;
+                    } else if (species.equals("magcargo") || species.equals("macargo")) {
+                        if (maxClear < 1.0) maxClear = 1.0;
                     }
-                    if (!species.equals("magcargo") && !species.equals("macargo") || !(maxClear < 1.0)) continue;
-                    maxClear = 1.0;
-                }
-                catch (Throwable throwable) {}
+                } catch (Throwable ignored) {}
             }
             if (hasMew && maxClear > 0.0) {
                 maxClear = 1.0;
             }
             return maxClear;
-        }
-        catch (Throwable throwable) {
-            return 0.0;
-        }
+        } catch (Throwable ignored) {}
+        return 0.0;
     }
 
     public static int getPlayerFortuneLevel(ServerPlayer player) {
-        if (player == null) {
-            return 0;
-        }
+        if (player == null) return 0;
         try {
             PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
-            if (party == null) {
-                return 0;
-            }
+            if (party == null) return 0;
+
             boolean hasMew = false;
             for (Pokemon p : party) {
-                if (!CobblePassiveHelper.isPokemonActive((Player)player, p) || p.getSpecies() == null || !p.getSpecies().getName().equalsIgnoreCase("mew")) continue;
-                hasMew = true;
-                break;
+                if (isPokemonActive(player, p) && p.getSpecies() != null && p.getSpecies().getName().equalsIgnoreCase("mew")) {
+                    hasMew = true;
+                    break;
+                }
             }
+
             int maxFortune = 0;
             for (Pokemon pokemon : party) {
-                if (!CobblePassiveHelper.isPokemonActive((Player)player, pokemon) || pokemon.getSpecies() == null || pokemon.getSpecies().getName() == null) continue;
+                if (!isPokemonActive(player, pokemon)) continue;
+                if (pokemon.getSpecies() == null || pokemon.getSpecies().getName() == null) continue;
                 String species = pokemon.getSpecies().getName().toLowerCase();
                 PassiveConfig.PassiveEntry entry = PassiveConfig.getPassive(species);
-                if (entry != null && entry.fortuneLevel > 0 && entry.fortuneLevel > maxFortune) {
-                    maxFortune = entry.fortuneLevel;
+                if (entry != null && entry.fortuneLevel > 0) {
+                    if (entry.fortuneLevel > maxFortune) {
+                        maxFortune = entry.fortuneLevel;
+                    }
                 }
                 if (species.equals("meowth")) {
-                    if (maxFortune >= 1) continue;
-                    maxFortune = 1;
-                    continue;
+                    if (maxFortune < 1) maxFortune = 1;
+                } else if (species.equals("persian")) {
+                    if (maxFortune < 3) maxFortune = 3;
                 }
-                if (!species.equals("persian") || maxFortune >= 3) continue;
-                maxFortune = 3;
             }
+
             if (maxFortune > 0 && hasMew) {
-                ++maxFortune;
+                maxFortune += 1;
             }
             return maxFortune;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return 0;
         }
     }
 
     public static boolean isPokemonActive(Player player, Pokemon pokemon) {
-        if (pokemon == null) {
-            return false;
-        }
-        if (PassiveConfig.requireNotFainted && pokemon.isFainted()) {
-            return false;
-        }
+        if (pokemon == null) return false;
+        if (PassiveConfig.requireNotFainted && pokemon.isFainted()) return false;
         if (PassiveConfig.requireSentOut) {
             PokemonState state = pokemon.getState();
-            boolean isSentOut = state instanceof SentOutState || state instanceof ActivePokemonState;
-            boolean isShouldered = PassiveConfig.allowShoulderState() && (state instanceof ShoulderedState || player != null && CobblePassiveHelper.isPokemonOnPlayerShoulder(player, pokemon));
+            boolean isSentOut = (state instanceof SentOutState) || (state instanceof com.cobblemon.mod.common.pokemon.activestate.ActivePokemonState);
+            boolean isShouldered = PassiveConfig.allowShoulderState() && (state instanceof ShoulderedState || (player != null && isPokemonOnPlayerShoulder(player, pokemon)));
             return isSentOut || isShouldered;
         }
         return true;
     }
 
     public static boolean hasClearLavaVision() {
-        return CobblePassiveHelper.getLavaVisionAmount() > 0.0;
+        return getLavaVisionAmount() > 0.0;
     }
 
     private static boolean isPokemonOnPlayerShoulder(Player player, Pokemon pokemon) {
-        return CobblePassiveHelper.matchesShoulderNbt(player.getShoulderEntityLeft(), pokemon) || CobblePassiveHelper.matchesShoulderNbt(player.getShoulderEntityRight(), pokemon);
+        return matchesShoulderNbt(player.getShoulderEntityLeft(), pokemon) || matchesShoulderNbt(player.getShoulderEntityRight(), pokemon);
     }
 
     private static boolean matchesShoulderNbt(CompoundTag shoulderNbt, Pokemon pokemon) {
-        if (shoulderNbt == null || shoulderNbt.isEmpty()) {
-            return false;
-        }
+        if (shoulderNbt == null || shoulderNbt.isEmpty()) return false;
         if (shoulderNbt.contains("Pokemon")) {
             CompoundTag pokeNbt = shoulderNbt.getCompound("Pokemon");
             if (pokeNbt.hasUUID("UUID") && pokeNbt.getUUID("UUID").equals(pokemon.getUuid())) {
@@ -919,20 +756,52 @@ public class CobblePassiveHelper {
             }
             if (pokeNbt.contains("Species")) {
                 String sp = pokeNbt.getString("Species").toLowerCase();
-                return sp.endsWith(":" + pokemon.getSpecies().getName().toLowerCase()) || sp.equals(pokemon.getSpecies().getName().toLowerCase());
+                return sp.endsWith(":" + pokemon.getSpecies().getName().toLowerCase())
+                        || sp.equals(pokemon.getSpecies().getName().toLowerCase());
             }
         }
         return false;
     }
 
-    static {
+    /**
+     * Safely retrieves the client player's party across Cobblemon 1.6, 1.7, and 1.8+
+     * using dynamic reflection fallback without throwing NoSuchMethodError.
+     */
+    @SuppressWarnings("unchecked")
+    public static Iterable<Pokemon> getClientParty() {
+        Minecraft client = Minecraft.getInstance();
+        if (client == null) return null;
+
         try {
-            FIELD_TIME_UNTIL_LURED = FishingHook.class.getDeclaredField("timeUntilLured");
-            FIELD_TIME_UNTIL_LURED.setAccessible(true);
+            Object storage = CobblemonClient.INSTANCE.getStorage();
+            if (storage != null) {
+                try {
+                    java.lang.reflect.Method m = storage.getClass().getMethod("getParty");
+                    Object partyObj = m.invoke(storage);
+                    if (partyObj instanceof Iterable) {
+                        return (Iterable<Pokemon>) partyObj;
+                    }
+                } catch (NoSuchMethodException ignored) {
+                    try {
+                        java.lang.reflect.Method m = storage.getClass().getMethod("getMyParty");
+                        Object partyObj = m.invoke(storage);
+                        if (partyObj instanceof Iterable) {
+                            return (Iterable<Pokemon>) partyObj;
+                        }
+                    } catch (Throwable ignored2) {}
+                }
+            }
+        } catch (Throwable ignored) {}
+
+        if (client.player != null && client.getSingleplayerServer() != null) {
+            try {
+                ServerPlayer sp = client.getSingleplayerServer().getPlayerList().getPlayer(client.player.getUUID());
+                if (sp != null) {
+                    return Cobblemon.INSTANCE.getStorage().getParty(sp);
+                }
+            } catch (Throwable ignored) {}
         }
-        catch (Throwable throwable) {
-            // empty catch block
-        }
+
+        return null;
     }
 }
-

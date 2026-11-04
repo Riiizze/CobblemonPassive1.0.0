@@ -44,6 +44,7 @@
       ]
     },
     "excadrill": {
+      "activeSkillCooldown": 30,
       "effects": [
         {
           "effect": "minecraft:haste",
@@ -51,6 +52,15 @@
           "maxY": 30
         }
       ]
+    },
+    "meganium": {
+      "activeSkillCooldown": 30
+    },
+    "rayquaza": {
+      "activeSkillCooldown": 60
+    },
+    "rillaboom": {
+      "activeSkillCooldown": 30
     },
     "ferroseed": {
       "thornsDamage": 1.5

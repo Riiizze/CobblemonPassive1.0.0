@@ -1,9 +1,14 @@
 plugins {
     id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+neoForge {
+    version = property('neo_version')
 }
 
 dependencies {
-    compileOnly "net.neoforged:neoforge:${property('neo_version')}"
-    compileOnly "com.cobblemon:mod:${property('cobblemon_version')}"
+    compileOnly "com.cobblemon:neoforge:${property('cobblemon_version')}"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:2.0.21"
     compileOnly "org.spongepowered:mixin:0.8.5"
 }

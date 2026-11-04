@@ -1,4 +1,21 @@
 {
   "effect.cobblepassive.web_immunity": "Web Immune",
-  "effect.cobblepassive.webImmune": "Web Immune"
+  "effect.cobblepassive.webImmune": "Web Immune",
+  "key.categories.cobblepassive": "CobblePassive",
+  "key.cobblepassive.active_skill": "Active Skill",
+  "key.cobblepassive.excadrill_skill": "Active Skill",
+  "message.cobblepassive.no_active_skill_pokemon": "You do not have any sent-out Pokémon with an active skill!",
+  "message.cobblepassive.excadrill.not_sent_out": "Excadrill must be in your party and sent out in the world!",
+  "message.cobblepassive.excadrill.cooldown": "Excadrill Drill is on cooldown (%ss remaining)!",
+  "message.cobblepassive.excadrill.no_target": "No valid target block in sight (max range: 25 blocks)!",
+  "message.cobblepassive.excadrill.activated": "Excadrill used Drill!",
+  "message.cobblepassive.meganium.not_sent_out": "Meganium must be in your party and sent out in the world!",
+  "message.cobblepassive.meganium.cooldown": "Meganium Floral Breath is on cooldown (%ss remaining)!",
+  "message.cobblepassive.meganium.activated": "Meganium used Floral Breath!",
+  "message.cobblepassive.rayquaza.not_sent_out": "Rayquaza must be in your party and sent out in the world!",
+  "message.cobblepassive.rayquaza.cooldown": "Rayquaza Air Lock is on cooldown (%ss remaining)!",
+  "message.cobblepassive.rayquaza.activated": "Rayquaza used Air Lock! The skies have cleared!",
+  "message.cobblepassive.rillaboom.not_sent_out": "Rillaboom must be in your party and sent out in the world!",
+  "message.cobblepassive.rillaboom.cooldown": "Rillaboom Grass Surge is on cooldown (%ss remaining)!",
+  "message.cobblepassive.rillaboom.activated": "Rillaboom used Grass Surge! The ground turned into Grassy Terrain!"
 }

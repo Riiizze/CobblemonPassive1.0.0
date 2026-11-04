@@ -1,14 +1,32 @@
 plugins {
     id 'java-library'
-    id 'net.neoforged.gradle.userdev' version '7.0.165'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+base {
+    archivesName = "CobblePassive-NeoForge"
+}
+
+neoForge {
+    version = property('neo_version')
+
+    mods {
+        "${property('mod_id')}" {
+            sourceSet(sourceSets.main)
+        }
+    }
 }
 
 dependencies {
-    implementation project(':common')
-    implementation "net.neoforged:neoforge:${property('neo_version')}"
-    implementation "com.cobblemon:mod:${property('cobblemon_version')}"
+    implementation "com.cobblemon:neoforge:${property('cobblemon_version')}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.21"
+    compileOnly project(':common')
 }
 
-tasks.named('jar', Jar) {
-    archiveClassifier = 'neoforge'
+tasks.named('compileJava', JavaCompile) {
+    source(project(':common').sourceSets.main.allSource)
+}
+
+processResources {
+    from project(':common').sourceSets.main.resources
 }
